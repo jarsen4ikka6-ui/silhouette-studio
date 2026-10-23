@@ -1,0 +1,8 @@
+#!/bin/sh
+# После коммита: отправить на GitHub и обновить архив в релизе (ссылка .../releases/latest/download/nomadapc.zip)
+git push -q origin HEAD 2>&1 || { echo "Не удалось отправить на GitHub — повтори: git push"; exit 0; }
+if command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; then
+  gh release view plugin >/dev/null 2>&1 || gh release create plugin --title "Плагин nomadapc" --notes "Скачайте nomadapc.zip и загрузите в Claude: Customize → Plugins → Add → Upload plugin." >/dev/null 2>&1
+  gh release upload plugin dist/nomadapc.zip --clobber >/dev/null 2>&1 && echo "Архив обновлён в релизе"
+fi
+exit 0

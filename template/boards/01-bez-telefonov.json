@@ -1,0 +1,3393 @@
+{
+  "id": "phones",
+  "fps": 30,
+  "width": 1920,
+  "height": 1080,
+  "mode": "explainer",
+  "language": "ru",
+  "voice": "audio/voice.mp3",
+  "voiceAt": 0.5,
+  "tail": 3.5,
+  "musicDb": -12,
+  "music": [
+    {
+      "mood": "bright",
+      "from": 0
+    },
+    {
+      "mood": "sad",
+      "from": "@но не все так романтично"
+    },
+    {
+      "mood": "hope",
+      "from": "@Так что завтра утром"
+    }
+  ],
+  "looks": {
+    "hero": {
+      "top": "hoodie",
+      "color": "#d0703a"
+    },
+    "nina": {
+      "top": "tee",
+      "color": "#6b5a8a",
+      "hair": "scarf",
+      "hairColor": "#8e3b46",
+      "glasses": true,
+      "skirt": true
+    },
+    "p1": {
+      "top": "tee",
+      "color": "#3f6fb5"
+    },
+    "p2": {
+      "top": "raincoat",
+      "color": "#c9a23a",
+      "hair": "ponytail"
+    },
+    "p3": {
+      "top": "hoodie",
+      "color": "#4f8a5a"
+    },
+    "p4": {
+      "top": "tee",
+      "color": "#a8455a",
+      "hair": "bun"
+    },
+    "courier": {
+      "top": "tee",
+      "color": "#2ea84f",
+      "hat": "cap",
+      "hatColor": "#2ea84f"
+    },
+    "granny": {
+      "top": "tee",
+      "color": "#5a6b88",
+      "hair": "bun",
+      "glasses": true,
+      "skirt": true
+    },
+    "old1": {
+      "top": "tee",
+      "color": "#6b6b6b",
+      "hat": "cap",
+      "hatColor": "#3a3a3a"
+    },
+    "old2": {
+      "top": "hoodie",
+      "color": "#7a5a3a",
+      "glasses": true
+    },
+    "oper": {
+      "top": "tee",
+      "color": "#7a6a4a"
+    }
+  },
+  "scenes": [
+    {
+      "note": "хук: рука ищет телефон",
+      "start": 0,
+      "fadeIn": 1.2,
+      "location": "bedroom",
+      "params": {
+        "tod": "dawn"
+      },
+      "ambience": "room",
+      "camera": {
+        "zoom": [
+          1.45,
+          1.3
+        ],
+        "focus": [
+          [
+            1010,
+            700
+          ],
+          [
+            1040,
+            680
+          ]
+        ]
+      },
+      "actors": [
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": 1170,
+          "y": 905,
+          "scale": 1.35,
+          "legs": "sit",
+          "facing": "left",
+          "mood": "sleep",
+          "keys": [
+            {
+              "at": "@тянешься к тумбочке",
+              "arms": "reach"
+            },
+            {
+              "at": "@Телефона нет",
+              "mood": "surprised",
+              "arms": "rest"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "note": "ищет везде",
+      "start": "Ни под подушкой",
+      "location": "bedroom",
+      "params": {
+        "tod": "dawn"
+      },
+      "ambience": "room",
+      "camera": {
+        "zoom": [
+          1.1,
+          1.18
+        ],
+        "focus": [
+          1250,
+          620
+        ]
+      },
+      "actors": [
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": 1300,
+          "y": 960,
+          "scale": 1.4,
+          "facing": "left",
+          "arms": "reach",
+          "mood": "surprised",
+          "lookY": 0.6,
+          "keys": [
+            {
+              "at": "@ни под кроватью",
+              "facing": "right",
+              "lookX": 0.6
+            },
+            {
+              "at": "@в кармане куртки",
+              "arms": "pocket",
+              "lookY": 0.4
+            }
+          ]
+        }
+      ],
+      "texts": [
+        {
+          "kind": "think",
+          "text": "Где он?..",
+          "actor": "hero",
+          "at": 0.6
+        }
+      ]
+    },
+    {
+      "note": "город: экраны гаснут",
+      "start": "И это не только у тебя",
+      "location": "city",
+      "params": {
+        "screensOffAt": "@на земле исчезли"
+      },
+      "camera": {
+        "zoom": [
+          1.35,
+          1
+        ],
+        "focus": [
+          [
+            960,
+            760
+          ],
+          [
+            960,
+            540
+          ]
+        ]
+      },
+      "sfx": [
+        {
+          "name": "whoosh",
+          "at": "@на земле исчезли"
+        }
+      ]
+    },
+    {
+      "note": "планета гаснет",
+      "start": "Все до одного",
+      "location": "globe",
+      "params": {
+        "lightsOffAt": "@просто растворились"
+      },
+      "camera": {
+        "zoom": [
+          1.15,
+          1
+        ],
+        "focus": [
+          960,
+          560
+        ]
+      },
+      "sfx": [
+        {
+          "name": "rise",
+          "at": "@Миллиарды экранов",
+          "volume": 0.7
+        }
+      ]
+    },
+    {
+      "note": "205 раз в день",
+      "start": "По одному американскому",
+      "location": "crossroad",
+      "ambience": "crowd",
+      "camera": {
+        "zoom": [
+          1,
+          1.08
+        ],
+        "focus": [
+          960,
+          600
+        ]
+      },
+      "actors": [
+        {
+          "id": "a",
+          "look": "p1",
+          "x": [
+            200,
+            700
+          ],
+          "y": 800,
+          "scale": 1.05,
+          "facing": "right",
+          "legs": "walk",
+          "arms": "phone",
+          "lookY": 0.6,
+          "phoneLight": true
+        },
+        {
+          "id": "b",
+          "look": "p2",
+          "x": [
+            1700,
+            1200
+          ],
+          "y": 810,
+          "scale": 1.05,
+          "facing": "left",
+          "legs": "walk",
+          "arms": "phone",
+          "lookY": 0.6,
+          "phoneLight": true
+        },
+        {
+          "id": "c",
+          "look": "p3",
+          "x": 1450,
+          "y": 960,
+          "scale": 1.2,
+          "arms": "phone",
+          "lookY": 0.6,
+          "phoneLight": true
+        }
+      ],
+      "overlays": [
+        {
+          "kind": "counter",
+          "from": 0,
+          "to": 205,
+          "label": "раз в день проверяем телефон",
+          "at": "@205 раз",
+          "time": 1.6,
+          "x": 560,
+          "y": 330
+        },
+        {
+          "kind": "caption",
+          "text": "Опрос Reviews.org, США, 2024",
+          "at": "@в 2024 году"
+        }
+      ],
+      "sfx": [
+        {
+          "name": "tick",
+          "at": "@205 раз"
+        }
+      ]
+    },
+    {
+      "note": "раз в 5 минут",
+      "start": "Это примерно раз",
+      "location": "crossroad",
+      "ambience": "crowd",
+      "camera": {
+        "zoom": [
+          1.25,
+          1.35
+        ],
+        "focus": [
+          1450,
+          680
+        ]
+      },
+      "actors": [
+        {
+          "id": "c",
+          "look": "p3",
+          "x": 1450,
+          "y": 960,
+          "scale": 1.2,
+          "arms": "phone",
+          "lookY": 0.6,
+          "phoneLight": true
+        }
+      ],
+      "overlays": [
+        {
+          "kind": "counter",
+          "from": 300,
+          "to": 0,
+          "format": "mmss",
+          "label": "до следующей проверки",
+          "at": 0.3,
+          "time": 2.2,
+          "x": 560,
+          "y": 330
+        }
+      ],
+      "sfx": [
+        {
+          "name": "buzz",
+          "at": 2.6
+        }
+      ]
+    },
+    {
+      "note": "хук-вопрос",
+      "start": "Так что будет с миром",
+      "fadeIn": 0.4,
+      "fadeOut": 0.4,
+      "card": {
+        "kind": "hook",
+        "text": "Что будет с миром без телефонов?"
+      },
+      "sfx": [
+        {
+          "name": "whoosh",
+          "at": 0.1
+        }
+      ]
+    },
+    {
+      "note": "тизер: кнопка с током",
+      "start": "Останься до конца",
+      "location": "lab",
+      "camera": {
+        "zoom": [
+          1.2,
+          1.3
+        ],
+        "focus": [
+          1000,
+          640
+        ]
+      },
+      "props": [
+        {
+          "kind": "chair",
+          "x": 860,
+          "y": 960,
+          "scale": 0.8,
+          "params": {
+            "color": "#9aa4b0"
+          }
+        },
+        {
+          "kind": "button",
+          "x": 1130,
+          "y": 960,
+          "scale": 0.7,
+          "params": {
+            "pressAt": "@бить себя током|+0.3"
+          }
+        }
+      ],
+      "actors": [
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": 880,
+          "y": 960,
+          "scale": 1.3,
+          "legs": "sit",
+          "facing": "right",
+          "mood": "tired",
+          "keys": [
+            {
+              "at": "@бить себя током",
+              "arms": "reach"
+            },
+            {
+              "at": "@бить себя током|+0.4",
+              "mood": "surprised",
+              "arms": "rest"
+            }
+          ]
+        }
+      ],
+      "sfx": [
+        {
+          "name": "zap",
+          "at": "@бить себя током|+0.3"
+        }
+      ]
+    },
+    {
+      "note": "тизер: мозг таксиста",
+      "start": "как у таксистов",
+      "location": "brain",
+      "params": {
+        "growAt": 0.4
+      },
+      "camera": {
+        "zoom": [
+          1,
+          1.1
+        ],
+        "focus": [
+          960,
+          520
+        ]
+      },
+      "sfx": [
+        {
+          "name": "rise",
+          "at": 0.3,
+          "volume": 0.5
+        }
+      ]
+    },
+    {
+      "note": "тизер: солнечная буря",
+      "start": "все это однажды",
+      "location": "space",
+      "params": {
+        "cmeAt": 0.2,
+        "earth": 0.56
+      },
+      "camera": {
+        "zoom": [
+          1.1,
+          1
+        ],
+        "focus": [
+          960,
+          540
+        ]
+      },
+      "fadeOut": 0.5,
+      "sfx": [
+        {
+          "name": "whoosh",
+          "at": 0.3
+        }
+      ]
+    },
+    {
+      "note": "час первый: проспал",
+      "start": "Час первый",
+      "fadeIn": 0.5,
+      "location": "bedroom",
+      "params": {
+        "tod": "morning"
+      },
+      "ambience": "room",
+      "camera": {
+        "zoom": [
+          1.15,
+          1.22
+        ],
+        "focus": [
+          1150,
+          600
+        ]
+      },
+      "actors": [
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": 1250,
+          "y": 905,
+          "scale": 1.35,
+          "legs": "sit",
+          "facing": "left",
+          "mood": "sleep",
+          "keys": [
+            {
+              "at": "@Ты проспал",
+              "mood": "surprised",
+              "lookX": -0.2,
+              "lookY": -0.3
+            }
+          ]
+        }
+      ],
+      "overlays": [
+        {
+          "kind": "caption",
+          "text": "Час первый",
+          "at": 0.2,
+          "dur": 3
+        },
+        {
+          "kind": "clock",
+          "time": "9:40",
+          "at": "@Ты проспал"
+        }
+      ],
+      "sfx": [
+        {
+          "name": "ding",
+          "at": "@Ты проспал"
+        }
+      ]
+    },
+    {
+      "note": "полгорода проспало",
+      "start": "И полгорода проспало",
+      "location": "city",
+      "params": {
+        "tod": "dawn",
+        "screensOffAt": -20
+      },
+      "camera": {
+        "zoom": [
+          1,
+          1.1
+        ],
+        "focus": [
+          960,
+          600
+        ]
+      }
+    },
+    {
+      "note": "хлопает по карману",
+      "start": "Ты выбегаешь на улицу",
+      "location": "crossroad",
+      "ambience": "crowd",
+      "camera": {
+        "zoom": [
+          1.05,
+          1.15
+        ],
+        "focus": [
+          [
+            800,
+            620
+          ],
+          [
+            960,
+            640
+          ]
+        ]
+      },
+      "actors": [
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": [
+            250,
+            900
+          ],
+          "y": 950,
+          "scale": 1.35,
+          "facing": "right",
+          "legs": "run",
+          "mood": "surprised",
+          "keys": [
+            {
+              "at": "@хлопаешь себя",
+              "legs": "stand",
+              "arms": "pocket",
+              "facing": "front"
+            },
+            {
+              "at": "@Пусто",
+              "arms": "rest",
+              "mood": "sad"
+            },
+            {
+              "at": "@Через минуту снова",
+              "arms": "pocket"
+            }
+          ]
+        }
+      ],
+      "texts": [
+        {
+          "kind": "think",
+          "text": "Пусто.",
+          "actor": "hero",
+          "at": "@Пусто",
+          "dur": 2.2
+        }
+      ],
+      "sfx": [
+        {
+          "name": "whoosh",
+          "at": 0.2,
+          "volume": 0.6
+        }
+      ]
+    },
+    {
+      "note": "фантомная вибрация",
+      "start": "А иногда кажется",
+      "location": "crossroad",
+      "ambience": "crowd",
+      "camera": {
+        "zoom": [
+          1.5,
+          1.6
+        ],
+        "focus": [
+          960,
+          720
+        ]
+      },
+      "actors": [
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": 960,
+          "y": 950,
+          "scale": 1.35,
+          "arms": "rest",
+          "mood": "neutral",
+          "lookY": 0.6,
+          "keys": [
+            {
+              "at": "@карман вибрирует",
+              "mood": "surprised",
+              "arms": "pocket"
+            }
+          ]
+        }
+      ],
+      "props": [
+        {
+          "kind": "buzz",
+          "x": 1020,
+          "y": 795,
+          "scale": 1.2,
+          "at": "@карман вибрирует",
+          "dur": 1.6,
+          "front": true
+        }
+      ],
+      "sfx": [
+        {
+          "name": "buzz",
+          "at": "@карман вибрирует"
+        }
+      ]
+    },
+    {
+      "note": "термин",
+      "start": "Это не сбой",
+      "location": "crossroad",
+      "ambience": "crowd",
+      "camera": {
+        "zoom": [
+          1.3,
+          1.36
+        ],
+        "focus": [
+          1100,
+          650
+        ]
+      },
+      "actors": [
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": 960,
+          "y": 950,
+          "scale": 1.35,
+          "arms": "pocket",
+          "mood": "tired",
+          "lookY": 0.6
+        }
+      ],
+      "overlays": [
+        {
+          "kind": "term",
+          "title": "Фантомная вибрация",
+          "text": "Кажется, что телефон вибрирует, хотя его нет",
+          "at": "@фантомная вибрация"
+        }
+      ],
+      "sfx": [
+        {
+          "name": "whoosh",
+          "at": "@фантомная вибрация",
+          "volume": 0.6
+        }
+      ]
+    },
+    {
+      "note": "89% студентов",
+      "start": "В одном исследовании",
+      "location": "crossroad",
+      "ambience": "crowd",
+      "camera": {
+        "zoom": [
+          1,
+          1.05
+        ],
+        "focus": [
+          960,
+          560
+        ]
+      },
+      "actors": [
+        {
+          "id": "a",
+          "look": "p1",
+          "x": 1250,
+          "y": 960,
+          "scale": 1.15,
+          "arms": "pocket",
+          "mood": "surprised",
+          "lookY": 0.6
+        },
+        {
+          "id": "b",
+          "look": "p4",
+          "x": 1500,
+          "y": 950,
+          "scale": 1.1,
+          "arms": "pocket",
+          "mood": "surprised",
+          "lookY": 0.6
+        },
+        {
+          "id": "c",
+          "look": "p2",
+          "x": 1740,
+          "y": 960,
+          "scale": 1.15,
+          "arms": "rest",
+          "mood": "neutral"
+        }
+      ],
+      "overlays": [
+        {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "студентов замечали фантомную вибрацию",
+              "value": 89
+            }
+          ],
+          "at": "@89",
+          "x": 120,
+          "y": 260
+        },
+        {
+          "kind": "caption",
+          "text": "Drouin и др., 2012",
+          "at": "@89"
+        }
+      ]
+    },
+    {
+      "note": "мозг придумывает сигнал",
+      "start": "Мозг так привык",
+      "location": "brain",
+      "params": {
+        "growAt": 999
+      },
+      "camera": {
+        "zoom": [
+          1,
+          1.08
+        ],
+        "focus": [
+          960,
+          480
+        ]
+      },
+      "props": [
+        {
+          "kind": "buzz",
+          "x": 960,
+          "y": 420,
+          "scale": 2.4,
+          "at": 0.8
+        }
+      ],
+      "sfx": [
+        {
+          "name": "buzz",
+          "at": 1.2,
+          "volume": 0.6
+        }
+      ]
+    },
+    {
+      "note": "кофейня: пустые ладони",
+      "start": "Дальше кофе",
+      "location": "cafe",
+      "ambience": "crowd",
+      "camera": {
+        "zoom": [
+          1,
+          1.08
+        ],
+        "focus": [
+          [
+            900,
+            600
+          ],
+          [
+            1060,
+            600
+          ]
+        ]
+      },
+      "actors": [
+        {
+          "id": "a",
+          "look": "p4",
+          "x": 1500,
+          "y": 1040,
+          "scale": 1.3,
+          "facing": "right",
+          "arms": "reach",
+          "mood": "sad",
+          "lookY": 0.7
+        },
+        {
+          "id": "b",
+          "look": "p1",
+          "x": 1200,
+          "y": 1040,
+          "scale": 1.3,
+          "facing": "right",
+          "arms": "reach",
+          "mood": "tired",
+          "lookY": 0.7
+        },
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": 900,
+          "y": 1040,
+          "scale": 1.3,
+          "facing": "right",
+          "arms": "reach",
+          "mood": "surprised",
+          "lookY": 0.7
+        },
+        {
+          "id": "c",
+          "look": "p3",
+          "x": 600,
+          "y": 1040,
+          "scale": 1.3,
+          "facing": "right",
+          "arms": "rest",
+          "mood": "tired"
+        }
+      ],
+      "overlays": [
+        {
+          "kind": "caption",
+          "text": "Деньги",
+          "at": 0.2,
+          "dur": 2.5
+        }
+      ]
+    },
+    {
+      "note": "нечем платить",
+      "start": "Многие платили телефоном",
+      "location": "cafe",
+      "ambience": "crowd",
+      "camera": {
+        "zoom": [
+          1.35,
+          1.45
+        ],
+        "focus": [
+          1360,
+          640
+        ]
+      },
+      "actors": [
+        {
+          "id": "a",
+          "look": "p4",
+          "x": 1300,
+          "y": 1040,
+          "scale": 1.3,
+          "facing": "right",
+          "arms": "reach",
+          "mood": "sad",
+          "lookY": 0.5,
+          "keys": [
+            {
+              "at": "@единственная карта",
+              "arms": "shrug"
+            }
+          ]
+        }
+      ],
+      "texts": [
+        {
+          "kind": "say",
+          "text": "А как теперь платить?",
+          "actor": "a",
+          "at": 0.8
+        }
+      ]
+    },
+    {
+      "note": "курьер без заказов",
+      "start": "Такси не вызвать",
+      "location": "crossroad",
+      "params": {
+        "tod": "evening"
+      },
+      "camera": {
+        "zoom": [
+          1.1,
+          1.18
+        ],
+        "focus": [
+          960,
+          620
+        ]
+      },
+      "props": [
+        {
+          "kind": "bag",
+          "x": 905,
+          "y": 760,
+          "scale": 1.2
+        }
+      ],
+      "actors": [
+        {
+          "id": "cour",
+          "look": "courier",
+          "x": 960,
+          "y": 950,
+          "scale": 1.35,
+          "arms": "rest",
+          "mood": "neutral",
+          "lookX": -0.6,
+          "keys": [
+            {
+              "at": "@Доставка встала",
+              "arms": "shrug",
+              "mood": "sad",
+              "lookX": 0.6
+            }
+          ]
+        }
+      ],
+      "texts": [
+        {
+          "kind": "think",
+          "text": "Заказов нет…",
+          "actor": "cour",
+          "at": "@Заказы приходили"
+        }
+      ]
+    },
+    {
+      "note": "банкомат и пин-код",
+      "start": "Кто то впервые за годы",
+      "location": "crossroad",
+      "params": {
+        "tod": "evening"
+      },
+      "camera": {
+        "zoom": [
+          1.3,
+          1.4
+        ],
+        "focus": [
+          1230,
+          620
+        ]
+      },
+      "props": [
+        {
+          "kind": "atm",
+          "x": 1380,
+          "y": 830,
+          "scale": 1.1
+        }
+      ],
+      "actors": [
+        {
+          "id": "a",
+          "look": "p1",
+          "x": 1180,
+          "y": 950,
+          "scale": 1.35,
+          "facing": "right",
+          "arms": "reach",
+          "mood": "neutral",
+          "keys": [
+            {
+              "at": "@забыл пин",
+              "mood": "surprised",
+              "arms": "think"
+            },
+            {
+              "at": "@платил только телефоном",
+              "mood": "sad"
+            }
+          ]
+        }
+      ],
+      "texts": [
+        {
+          "kind": "think",
+          "text": "1… 9… 4… а дальше?",
+          "actor": "a",
+          "at": "@понимает что забыл"
+        }
+      ],
+      "sfx": [
+        {
+          "name": "click",
+          "at": 0.8
+        },
+        {
+          "name": "click",
+          "at": 1.2
+        },
+        {
+          "name": "click",
+          "at": 1.6
+        }
+      ]
+    },
+    {
+      "note": "позвонить маме",
+      "start": "Ладно деньги подождут",
+      "location": "kitchen",
+      "params": {
+        "hour": 10.2
+      },
+      "ambience": "room",
+      "camera": {
+        "zoom": [
+          1.1,
+          1.2
+        ],
+        "focus": [
+          1100,
+          620
+        ]
+      },
+      "props": [
+        {
+          "kind": "landline",
+          "x": 1250,
+          "y": 652,
+          "scale": 0.8
+        }
+      ],
+      "actors": [
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": 980,
+          "y": 965,
+          "scale": 1.4,
+          "facing": "right",
+          "arms": "rest",
+          "mood": "neutral",
+          "keys": [
+            {
+              "at": "@Надо позвонить маме",
+              "lookX": 0.7,
+              "lookY": 0.3
+            }
+          ]
+        }
+      ],
+      "texts": [
+        {
+          "kind": "think",
+          "text": "Надо позвонить маме",
+          "actor": "hero",
+          "at": "@Надо позвонить"
+        }
+      ]
+    },
+    {
+      "note": "не помнит номер",
+      "start": "Ты снимаешь трубку",
+      "location": "kitchen",
+      "params": {
+        "hour": 10.2
+      },
+      "ambience": "room",
+      "camera": {
+        "zoom": [
+          1.35,
+          1.45
+        ],
+        "focus": [
+          1130,
+          560
+        ]
+      },
+      "props": [
+        {
+          "kind": "landline",
+          "x": 1250,
+          "y": 652,
+          "scale": 0.8,
+          "params": {
+            "handset": false
+          }
+        }
+      ],
+      "actors": [
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": 1110,
+          "y": 965,
+          "scale": 1.4,
+          "facing": "right",
+          "arms": "ear",
+          "mood": "neutral",
+          "keys": [
+            {
+              "at": "@не помнишь номер",
+              "mood": "sad"
+            }
+          ]
+        }
+      ],
+      "texts": [
+        {
+          "kind": "say",
+          "text": "Мама… восемь, девять, один, шесть…\nа дальше?",
+          "actor": "hero",
+          "at": "@и понимаешь"
+        }
+      ],
+      "sfx": [
+        {
+          "name": "dial",
+          "at": 0.3
+        }
+      ]
+    },
+    {
+      "note": "Касперский: номера",
+      "start": "Ты не один",
+      "location": "kitchen",
+      "params": {
+        "hour": 10.3
+      },
+      "ambience": "room",
+      "camera": {
+        "zoom": [
+          1.05,
+          1
+        ],
+        "focus": [
+          1300,
+          560
+        ]
+      },
+      "props": [
+        {
+          "kind": "landline",
+          "x": 1250,
+          "y": 652,
+          "scale": 0.8,
+          "params": {
+            "handset": false
+          }
+        }
+      ],
+      "actors": [
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": 1110,
+          "y": 965,
+          "scale": 1.4,
+          "facing": "right",
+          "arms": "ear",
+          "mood": "sad"
+        }
+      ],
+      "overlays": [
+        {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "не вспомнили номер своих детей",
+              "value": 53
+            },
+            {
+              "label": "не вспомнили номер партнёра",
+              "value": 33,
+              "color": "#9fd0ff"
+            }
+          ],
+          "at": "@Больше половины",
+          "x": 120,
+          "y": 230
+        },
+        {
+          "kind": "caption",
+          "text": "«Лаборатория Касперского», 2015, 6000 человек",
+          "at": "@лаборатория Касперского"
+        }
+      ]
+    },
+    {
+      "note": "цифровая амнезия",
+      "start": "Это назвали цифровой",
+      "location": "brain",
+      "params": {
+        "growAt": 999
+      },
+      "camera": {
+        "zoom": [
+          1.05,
+          1.12
+        ],
+        "focus": [
+          960,
+          480
+        ]
+      },
+      "overlays": [
+        {
+          "kind": "term",
+          "title": "Цифровая амнезия",
+          "text": "Мы забываем то, что за нас помнит телефон",
+          "at": "@цифровой амнезией"
+        }
+      ],
+      "sfx": [
+        {
+          "name": "whoosh",
+          "at": "@цифровой амнезией",
+          "volume": 0.6
+        }
+      ]
+    },
+    {
+      "note": "баба Нина",
+      "start": "А вот баба Нина",
+      "location": "entrance",
+      "camera": {
+        "zoom": [
+          1.2,
+          1.3
+        ],
+        "focus": [
+          760,
+          600
+        ]
+      },
+      "actors": [
+        {
+          "id": "nina",
+          "look": "nina",
+          "x": 760,
+          "y": 1000,
+          "scale": 1.4,
+          "facing": "right",
+          "arms": "write",
+          "mood": "happy",
+          "lookY": 0.5
+        }
+      ],
+      "props": [
+        {
+          "kind": "notebook",
+          "x": 770,
+          "y": 822,
+          "scale": 0.9,
+          "front": true
+        }
+      ],
+      "overlays": [
+        {
+          "kind": "caption",
+          "text": "Тетрадка с номерами за 40 лет",
+          "at": "@тетрадка в клеточку"
+        }
+      ]
+    },
+    {
+      "note": "очередь к Нине",
+      "start": "с номерами за",
+      "location": "entrance",
+      "camera": {
+        "zoom": [
+          1,
+          1.06
+        ],
+        "focus": [
+          960,
+          560
+        ]
+      },
+      "actors": [
+        {
+          "id": "nina",
+          "look": "nina",
+          "x": 420,
+          "y": 1000,
+          "scale": 1.35,
+          "facing": "right",
+          "arms": "write",
+          "mood": "happy",
+          "lookY": 0.5
+        },
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": 760,
+          "y": 1000,
+          "scale": 1.35,
+          "facing": "left",
+          "arms": "rest",
+          "mood": "neutral"
+        },
+        {
+          "id": "a",
+          "look": "p2",
+          "x": 1060,
+          "y": 1000,
+          "scale": 1.3,
+          "facing": "left",
+          "arms": "rest",
+          "mood": "tired"
+        },
+        {
+          "id": "b",
+          "look": "p3",
+          "x": 1340,
+          "y": 1000,
+          "scale": 1.3,
+          "facing": "left",
+          "arms": "hips",
+          "mood": "tired"
+        },
+        {
+          "id": "c",
+          "look": "p4",
+          "x": 1620,
+          "y": 1000,
+          "scale": 1.3,
+          "facing": "left",
+          "arms": "rest",
+          "mood": "neutral"
+        }
+      ],
+      "props": [
+        {
+          "kind": "notebook",
+          "x": 430,
+          "y": 828,
+          "scale": 0.85,
+          "front": true
+        }
+      ],
+      "texts": [
+        {
+          "kind": "say",
+          "text": "Записывайся, милок",
+          "actor": "nina",
+          "at": 0.5
+        }
+      ]
+    },
+    {
+      "note": "навигатор гаснет",
+      "start": "Теперь попробуй доехать",
+      "location": "crossroad",
+      "camera": {
+        "zoom": [
+          1.05,
+          1.15
+        ],
+        "focus": [
+          960,
+          640
+        ]
+      },
+      "props": [
+        {
+          "kind": "route",
+          "x": 960,
+          "y": 960,
+          "scale": 1.6,
+          "params": {
+            "fadeAt": "@синюю линию"
+          }
+        }
+      ],
+      "actors": [
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": 960,
+          "y": 950,
+          "scale": 1.35,
+          "facing": "left",
+          "arms": "rest",
+          "mood": "neutral",
+          "keys": [
+            {
+              "at": "@Ты знаешь дорогу",
+              "facing": "right",
+              "arms": "shrug",
+              "mood": "surprised"
+            },
+            {
+              "at": "@синюю линию",
+              "facing": "front",
+              "mood": "sad",
+              "lookX": 0
+            }
+          ]
+        }
+      ],
+      "texts": [
+        {
+          "kind": "think",
+          "text": "Налево? Направо?",
+          "actor": "hero",
+          "at": "@Ты знаешь дорогу"
+        }
+      ]
+    },
+    {
+      "note": "Лондон: таксисты",
+      "start": "Вот что интересно",
+      "location": "london",
+      "camera": {
+        "zoom": [
+          1,
+          1.08
+        ],
+        "focus": [
+          960,
+          560
+        ]
+      },
+      "props": [
+        {
+          "kind": "cab",
+          "x": [
+            -300,
+            2200
+          ],
+          "y": 960,
+          "scale": 1
+        }
+      ],
+      "overlays": [
+        {
+          "kind": "counter",
+          "from": 0,
+          "to": 25000,
+          "label": "улиц учат наизусть",
+          "at": "@десятки тысяч",
+          "time": 1.8,
+          "x": 560,
+          "y": 300
+        }
+      ]
+    },
+    {
+      "note": "экзамен «Знание»",
+      "start": "Их экзамен так",
+      "location": "london",
+      "camera": {
+        "zoom": [
+          1.2,
+          1.25
+        ],
+        "focus": [
+          960,
+          700
+        ]
+      },
+      "props": [
+        {
+          "kind": "cab",
+          "x": 900,
+          "y": 960,
+          "scale": 1
+        }
+      ],
+      "actors": [
+        {
+          "id": "cab",
+          "look": "old1",
+          "x": 1300,
+          "y": 960,
+          "scale": 1.3,
+          "facing": "left",
+          "arms": "hips",
+          "mood": "happy"
+        }
+      ],
+      "overlays": [
+        {
+          "kind": "term",
+          "title": "The Knowledge — «Знание»",
+          "text": "Экзамен лондонских таксистов: город наизусть",
+          "at": "@Знание"
+        }
+      ],
+      "sfx": [
+        {
+          "name": "ding",
+          "at": "@Знание",
+          "volume": 0.6
+        }
+      ]
+    },
+    {
+      "note": "учёные сканируют мозг",
+      "start": "2000 году",
+      "location": "brain",
+      "params": {
+        "growAt": 999
+      },
+      "camera": {
+        "zoom": [
+          1,
+          1.06
+        ],
+        "focus": [
+          960,
+          540
+        ]
+      },
+      "overlays": [
+        {
+          "kind": "caption",
+          "text": "Maguire и др., PNAS, 2000",
+          "at": 0.5
+        }
+      ]
+    },
+    {
+      "note": "гиппокамп растёт",
+      "start": "Задняя часть гиппокампа",
+      "location": "brain",
+      "params": {
+        "growAt": "@оказалась у таксистов"
+      },
+      "camera": {
+        "zoom": [
+          1.25,
+          1.45
+        ],
+        "focus": [
+          [
+            960,
+            520
+          ],
+          [
+            990,
+            520
+          ]
+        ]
+      },
+      "sfx": [
+        {
+          "name": "rise",
+          "at": "@оказалась у таксистов",
+          "volume": 0.6
+        }
+      ]
+    },
+    {
+      "note": "чем дольше, тем больше",
+      "start": "И чем дольше",
+      "location": "brain",
+      "params": {
+        "growAt": -5
+      },
+      "camera": {
+        "zoom": [
+          1.1,
+          1
+        ],
+        "focus": [
+          960,
+          540
+        ]
+      },
+      "overlays": [
+        {
+          "kind": "meter",
+          "label": "Гиппокамп таксиста",
+          "from": 55,
+          "to": 92,
+          "at": 0.3,
+          "x": 120,
+          "y": 260
+        }
+      ]
+    },
+    {
+      "note": "мозг как мышца",
+      "start": "Мозг похож на мышцу",
+      "location": "street",
+      "camera": {
+        "zoom": [
+          1.2,
+          1.3
+        ],
+        "focus": [
+          960,
+          640
+        ]
+      },
+      "actors": [
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": 960,
+          "y": 900,
+          "scale": 1.35,
+          "arms": "phone",
+          "mood": "tired",
+          "lookY": 0.6,
+          "phoneLight": true,
+          "rim": "#a9d4ff",
+          "rimSide": "right"
+        }
+      ],
+      "props": [
+        {
+          "kind": "route",
+          "x": 960,
+          "y": 960,
+          "scale": 1.4,
+          "params": {
+            "fadeAt": 99
+          }
+        }
+      ],
+      "rain": 0.6,
+      "ambience": "rain"
+    },
+    {
+      "note": "поворот: отдохнём?",
+      "start": "Ну хорошо неудобно",
+      "fadeIn": 0.4,
+      "location": "bedroom",
+      "params": {
+        "tod": "morning"
+      },
+      "ambience": "room",
+      "camera": {
+        "zoom": [
+          1.05,
+          1.12
+        ],
+        "focus": [
+          1200,
+          600
+        ]
+      },
+      "actors": [
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": 1250,
+          "y": 905,
+          "scale": 1.35,
+          "legs": "sit",
+          "facing": "left",
+          "arms": "rest",
+          "mood": "neutral",
+          "keys": [
+            {
+              "at": "@наконец отдохнем",
+              "mood": "happy"
+            }
+          ]
+        }
+      ],
+      "texts": [
+        {
+          "kind": "think",
+          "text": "Может, отдохну?",
+          "actor": "hero",
+          "at": "@Может без телефона"
+        }
+      ]
+    },
+    {
+      "note": "разучились скучать",
+      "start": "Только есть проблема",
+      "location": "bedroom",
+      "params": {
+        "tod": "morning"
+      },
+      "ambience": "room",
+      "camera": {
+        "zoom": [
+          1.4,
+          1.6
+        ],
+        "focus": [
+          1230,
+          560
+        ]
+      },
+      "actors": [
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": 1250,
+          "y": 905,
+          "scale": 1.35,
+          "legs": "sit",
+          "facing": "left",
+          "arms": "think",
+          "mood": "tired",
+          "lookX": -0.3,
+          "keys": [
+            {
+              "at": "@разучились скучать",
+              "mood": "sad",
+              "arms": "rest"
+            }
+          ]
+        }
+      ],
+      "sfx": [
+        {
+          "name": "tick",
+          "at": 0.2
+        },
+        {
+          "name": "tick",
+          "at": 1.2
+        }
+      ]
+    },
+    {
+      "note": "эксперимент: пустая комната",
+      "start": "В 2014 году",
+      "location": "lab",
+      "params": {
+        "timerAt": "@на 15 минут",
+        "timerFrom": 900,
+        "timerSpeed": 25
+      },
+      "camera": {
+        "zoom": [
+          1,
+          1.08
+        ],
+        "focus": [
+          960,
+          560
+        ]
+      },
+      "props": [
+        {
+          "kind": "chair",
+          "x": 1130,
+          "y": 960,
+          "scale": 0.8,
+          "params": {
+            "color": "#9aa4b0"
+          }
+        },
+        {
+          "kind": "button",
+          "x": 1410,
+          "y": 960,
+          "scale": 0.7,
+          "at": "@кнопка которая"
+        }
+      ],
+      "actors": [
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": 1150,
+          "y": 960,
+          "scale": 1.3,
+          "legs": "sit",
+          "facing": "right",
+          "arms": "rest",
+          "mood": "neutral",
+          "keys": [
+            {
+              "at": "@только мысли",
+              "mood": "tired",
+              "arms": "think"
+            }
+          ]
+        }
+      ],
+      "overlays": [
+        {
+          "kind": "caption",
+          "text": "Уилсон и др., Science, 2014",
+          "at": "@психологи из Университета"
+        }
+      ]
+    },
+    {
+      "note": "пробный удар",
+      "start": "До этого им дали",
+      "location": "lab",
+      "camera": {
+        "zoom": [
+          1.35,
+          1.4
+        ],
+        "focus": [
+          1000,
+          680
+        ]
+      },
+      "props": [
+        {
+          "kind": "chair",
+          "x": 860,
+          "y": 960,
+          "scale": 0.8,
+          "params": {
+            "color": "#9aa4b0"
+          }
+        },
+        {
+          "kind": "button",
+          "x": 1130,
+          "y": 960,
+          "scale": 0.7,
+          "params": {
+            "pressAt": "@попробовать удар|+0.3"
+          }
+        }
+      ],
+      "actors": [
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": 880,
+          "y": 960,
+          "scale": 1.3,
+          "legs": "sit",
+          "facing": "right",
+          "arms": "rest",
+          "mood": "neutral",
+          "keys": [
+            {
+              "at": "@попробовать удар",
+              "arms": "reach"
+            },
+            {
+              "at": "@попробовать удар|+0.35",
+              "mood": "angry",
+              "arms": "rest"
+            },
+            {
+              "at": "@даже заплатили",
+              "mood": "sad"
+            }
+          ]
+        }
+      ],
+      "texts": [
+        {
+          "kind": "say",
+          "text": "Ай! Больше не хочу",
+          "actor": "hero",
+          "at": "@попробовать удар|+0.5"
+        }
+      ],
+      "sfx": [
+        {
+          "name": "zap",
+          "at": "@попробовать удар|+0.3"
+        }
+      ]
+    },
+    {
+      "note": "2/3 мужчин, 1/4 женщин",
+      "start": "И что",
+      "location": "lab",
+      "camera": {
+        "zoom": [
+          1,
+          1.04
+        ],
+        "focus": [
+          1100,
+          560
+        ]
+      },
+      "props": [
+        {
+          "kind": "chair",
+          "x": 1360,
+          "y": 960,
+          "scale": 0.8,
+          "params": {
+            "color": "#9aa4b0"
+          }
+        },
+        {
+          "kind": "button",
+          "x": 1630,
+          "y": 960,
+          "scale": 0.7
+        }
+      ],
+      "actors": [
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": 1380,
+          "y": 960,
+          "scale": 1.3,
+          "legs": "sit",
+          "facing": "right",
+          "arms": "think",
+          "mood": "tired"
+        }
+      ],
+      "overlays": [
+        {
+          "kind": "bars",
+          "items": [
+            {
+              "label": "мужчин нажали кнопку",
+              "value": 67
+            },
+            {
+              "label": "женщин нажали кнопку",
+              "value": 25,
+              "color": "#9fd0ff"
+            }
+          ],
+          "at": "@Две трети",
+          "x": 120,
+          "y": 230
+        }
+      ]
+    },
+    {
+      "note": "нажал ещё раз",
+      "start": "Хотя бы раз",
+      "location": "lab",
+      "camera": {
+        "zoom": [
+          1.3,
+          1.45
+        ],
+        "focus": [
+          1000,
+          680
+        ]
+      },
+      "props": [
+        {
+          "kind": "chair",
+          "x": 860,
+          "y": 960,
+          "scale": 0.8,
+          "params": {
+            "color": "#9aa4b0"
+          }
+        },
+        {
+          "kind": "button",
+          "x": 1130,
+          "y": 960,
+          "scale": 0.7,
+          "params": {
+            "pressAt": "@сидеть наедине|+0.2"
+          }
+        }
+      ],
+      "actors": [
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": 880,
+          "y": 960,
+          "scale": 1.3,
+          "legs": "sit",
+          "facing": "right",
+          "arms": "rest",
+          "mood": "tired",
+          "lookX": 0.8,
+          "keys": [
+            {
+              "at": "@Лишь бы не",
+              "arms": "reach"
+            },
+            {
+              "at": "@сидеть наедине|+0.25",
+              "mood": "surprised",
+              "arms": "rest"
+            }
+          ]
+        }
+      ],
+      "sfx": [
+        {
+          "name": "zap",
+          "at": "@сидеть наедине|+0.2"
+        }
+      ]
+    },
+    {
+      "note": "такая комната у всех",
+      "start": "Теперь представь мир",
+      "location": "grid",
+      "params": {
+        "cols": 12,
+        "rows": 7
+      },
+      "camera": {
+        "zoom": [
+          3.2,
+          1
+        ],
+        "focus": [
+          [
+            880,
+            540
+          ],
+          [
+            960,
+            540
+          ]
+        ]
+      },
+      "fadeOut": 0.5
+    },
+    {
+      "note": "первые дни: руки некуда деть",
+      "start": "Первые дни тяжелые",
+      "fadeIn": 0.5,
+      "location": "bedroom",
+      "params": {
+        "tod": "morning"
+      },
+      "ambience": "room",
+      "camera": {
+        "zoom": [
+          1.15,
+          1.2
+        ],
+        "focus": [
+          1200,
+          620
+        ]
+      },
+      "actors": [
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": 1250,
+          "y": 905,
+          "scale": 1.35,
+          "legs": "sit",
+          "facing": "left",
+          "arms": "pocket",
+          "mood": "tired",
+          "keys": [
+            {
+              "at": "@Руки не знают",
+              "arms": "think"
+            },
+            {
+              "at": "@куда себя деть",
+              "arms": "hips"
+            }
+          ]
+        }
+      ],
+      "overlays": [
+        {
+          "kind": "caption",
+          "text": "Первая неделя",
+          "at": 0.2,
+          "dur": 3
+        }
+      ]
+    },
+    {
+      "note": "метро: смотрят друг на друга",
+      "start": "В метро люди",
+      "location": "metro",
+      "ambience": "crowd",
+      "camera": {
+        "zoom": [
+          1,
+          1.06
+        ],
+        "focus": [
+          960,
+          560
+        ]
+      },
+      "actors": [
+        {
+          "id": "a",
+          "look": "p1",
+          "x": 380,
+          "y": 772,
+          "scale": 1.3,
+          "legs": "sit",
+          "arms": "rest",
+          "mood": "neutral",
+          "lookX": 0.7
+        },
+        {
+          "id": "b",
+          "look": "p4",
+          "x": 760,
+          "y": 772,
+          "scale": 1.3,
+          "legs": "sit",
+          "arms": "rest",
+          "mood": "surprised",
+          "lookX": -0.7
+        },
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": 1160,
+          "y": 772,
+          "scale": 1.3,
+          "legs": "sit",
+          "arms": "rest",
+          "mood": "neutral",
+          "lookX": 0.7,
+          "keys": [
+            {
+              "at": "@Неловко",
+              "lookX": 0,
+              "lookY": 0.6,
+              "mood": "tired"
+            }
+          ]
+        },
+        {
+          "id": "c",
+          "look": "p2",
+          "x": 1540,
+          "y": 772,
+          "scale": 1.3,
+          "legs": "sit",
+          "arms": "rest",
+          "mood": "neutral",
+          "lookX": -0.7,
+          "keys": [
+            {
+              "at": "@Неловко",
+              "lookX": 0,
+              "lookY": -0.5
+            }
+          ]
+        }
+      ],
+      "texts": [
+        {
+          "kind": "think",
+          "text": "Неловко…",
+          "actor": "hero",
+          "at": "@Неловко"
+        }
+      ]
+    },
+    {
+      "note": "читает рекламу",
+      "start": "Кто то по третьему",
+      "location": "metro",
+      "ambience": "crowd",
+      "camera": {
+        "zoom": [
+          1.5,
+          1.6
+        ],
+        "focus": [
+          620,
+          480
+        ]
+      },
+      "actors": [
+        {
+          "id": "b",
+          "look": "p4",
+          "x": 640,
+          "y": 772,
+          "scale": 1.3,
+          "legs": "sit",
+          "arms": "rest",
+          "mood": "tired",
+          "lookX": -0.2,
+          "lookY": -0.8
+        }
+      ],
+      "texts": [
+        {
+          "kind": "think",
+          "text": "…третий раз читаю",
+          "actor": "b",
+          "at": 0.6
+        }
+      ]
+    },
+    {
+      "note": "скука начинает работать",
+      "start": "А потом происходит",
+      "location": "bedroom",
+      "params": {
+        "tod": "night",
+        "lamp": true,
+        "rain": false
+      },
+      "ambience": "room",
+      "camera": {
+        "zoom": [
+          1.2,
+          1.3
+        ],
+        "focus": [
+          1230,
+          560
+        ]
+      },
+      "actors": [
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": 1250,
+          "y": 905,
+          "scale": 1.35,
+          "legs": "sit",
+          "facing": "left",
+          "arms": "rest",
+          "mood": "neutral",
+          "lookY": -0.8,
+          "keys": [
+            {
+              "at": "@Скука начинает",
+              "mood": "surprised",
+              "arms": "think"
+            }
+          ]
+        }
+      ],
+      "props": [
+        {
+          "kind": "bulb",
+          "x": 1180,
+          "y": 300,
+          "scale": 0.9,
+          "at": "@Скука начинает"
+        },
+        {
+          "kind": "bulb",
+          "x": 1360,
+          "y": 250,
+          "scale": 0.7,
+          "at": "@больше идей"
+        }
+      ],
+      "sfx": [
+        {
+          "name": "ding",
+          "at": "@Скука начинает",
+          "volume": 0.7
+        },
+        {
+          "name": "ding",
+          "at": "@больше идей",
+          "volume": 0.7
+        }
+      ]
+    },
+    {
+      "note": "мозгу нужна пустота",
+      "start": "Мозгу нужна пустота",
+      "location": "bedroom",
+      "params": {
+        "tod": "night",
+        "lamp": true,
+        "rain": false
+      },
+      "ambience": "room",
+      "camera": {
+        "zoom": [
+          1.3,
+          1.15
+        ],
+        "focus": [
+          1230,
+          520
+        ]
+      },
+      "actors": [
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": 1250,
+          "y": 905,
+          "scale": 1.35,
+          "legs": "sit",
+          "facing": "left",
+          "arms": "think",
+          "mood": "happy",
+          "lookY": -0.8
+        }
+      ],
+      "props": [
+        {
+          "kind": "bulb",
+          "x": 1180,
+          "y": 300,
+          "scale": 0.9
+        },
+        {
+          "kind": "bulb",
+          "x": 1360,
+          "y": 250,
+          "scale": 0.7
+        },
+        {
+          "kind": "bulb",
+          "x": 1050,
+          "y": 230,
+          "scale": 0.6,
+          "at": 0.8
+        },
+        {
+          "kind": "bulb",
+          "x": 1480,
+          "y": 380,
+          "scale": 0.55,
+          "at": 1.4
+        }
+      ],
+      "sfx": [
+        {
+          "name": "ding",
+          "at": 0.8,
+          "volume": 0.5
+        },
+        {
+          "name": "ding",
+          "at": 1.4,
+          "volume": 0.5
+        }
+      ]
+    },
+    {
+      "note": "двор: шахматы",
+      "start": "вечером во дворе",
+      "location": "yard",
+      "ambience": "birds",
+      "camera": {
+        "zoom": [
+          1,
+          1.1
+        ],
+        "focus": [
+          [
+            900,
+            600
+          ],
+          [
+            960,
+            640
+          ]
+        ]
+      },
+      "props": [
+        {
+          "kind": "chess",
+          "x": 960,
+          "y": 960,
+          "scale": 1.2
+        }
+      ],
+      "actors": [
+        {
+          "id": "o1",
+          "look": "old1",
+          "x": 780,
+          "y": 960,
+          "scale": 1.3,
+          "legs": "sit",
+          "facing": "right",
+          "arms": "think",
+          "mood": "happy"
+        },
+        {
+          "id": "o2",
+          "look": "old2",
+          "x": 1140,
+          "y": 960,
+          "scale": 1.3,
+          "legs": "sit",
+          "facing": "left",
+          "arms": "rest",
+          "mood": "neutral"
+        }
+      ],
+      "sfx": [
+        {
+          "name": "click",
+          "at": 2.2,
+          "volume": 0.5
+        }
+      ]
+    },
+    {
+      "note": "встреча у фонтана",
+      "start": "люди договариваются",
+      "location": "yard",
+      "ambience": "birds",
+      "camera": {
+        "zoom": [
+          1.05,
+          1.12
+        ],
+        "focus": [
+          1100,
+          620
+        ]
+      },
+      "actors": [
+        {
+          "id": "a",
+          "look": "p2",
+          "x": 1400,
+          "y": 950,
+          "scale": 1.35,
+          "facing": "left",
+          "arms": "rest",
+          "mood": "neutral",
+          "keys": [
+            {
+              "at": "@и приходят",
+              "arms": "cheer",
+              "mood": "happy"
+            }
+          ]
+        },
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": [
+            300,
+            1080
+          ],
+          "y": 950,
+          "scale": 1.35,
+          "facing": "right",
+          "legs": "walk",
+          "mood": "happy"
+        }
+      ],
+      "texts": [
+        {
+          "kind": "say",
+          "text": "Ты пришёл!",
+          "actor": "a",
+          "at": "@и приходят"
+        }
+      ]
+    },
+    {
+      "note": "исчезли фотографии",
+      "start": "но не все так романтично",
+      "fadeIn": 0.8,
+      "location": "bedroom",
+      "params": {
+        "tod": "night"
+      },
+      "ambience": "rain-indoor",
+      "camera": {
+        "zoom": [
+          1.05,
+          1.15
+        ],
+        "focus": [
+          1150,
+          520
+        ]
+      },
+      "actors": [
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": 1250,
+          "y": 905,
+          "scale": 1.35,
+          "legs": "sit",
+          "facing": "left",
+          "arms": "rest",
+          "mood": "sad",
+          "lookY": -0.4,
+          "rim": "#a9d4ff",
+          "rimSide": "left"
+        }
+      ],
+      "props": [
+        {
+          "kind": "memory",
+          "x": 900,
+          "y": 330,
+          "scale": 0.9,
+          "at": "@первые шаги",
+          "params": {
+            "icon": "steps",
+            "rot": -6
+          }
+        },
+        {
+          "kind": "memory",
+          "x": 1200,
+          "y": 260,
+          "scale": 0.9,
+          "at": "@свадьба",
+          "params": {
+            "icon": "rings",
+            "rot": 4,
+            "seed": 2
+          }
+        },
+        {
+          "kind": "memory",
+          "x": 1500,
+          "y": 340,
+          "scale": 0.9,
+          "at": "@свадьба|+1",
+          "params": {
+            "icon": "dog",
+            "rot": -3,
+            "seed": 4
+          }
+        }
+      ]
+    },
+    {
+      "note": "голосовое исчезает",
+      "start": "и голосовое сообщение",
+      "location": "bedroom",
+      "params": {
+        "tod": "night"
+      },
+      "ambience": "rain-indoor",
+      "camera": {
+        "zoom": [
+          1.25,
+          1.35
+        ],
+        "focus": [
+          1150,
+          500
+        ]
+      },
+      "actors": [
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": 1250,
+          "y": 905,
+          "scale": 1.35,
+          "legs": "sit",
+          "facing": "left",
+          "arms": "rest",
+          "mood": "sad",
+          "lookY": -0.4,
+          "rim": "#a9d4ff",
+          "rimSide": "left"
+        }
+      ],
+      "props": [
+        {
+          "kind": "voicemsg",
+          "x": 1100,
+          "y": 340,
+          "scale": 1,
+          "at": 0.4,
+          "params": {
+            "goneAt": "@Теперь его нет"
+          }
+        }
+      ],
+      "sfx": [
+        {
+          "name": "sigh",
+          "at": "@Теперь его нет",
+          "volume": 0.7
+        }
+      ]
+    },
+    {
+      "note": "письма сыну",
+      "start": "А у кого то сын",
+      "location": "oldroom",
+      "ambience": "room",
+      "camera": {
+        "zoom": [
+          1.1,
+          1.2
+        ],
+        "focus": [
+          800,
+          560
+        ]
+      },
+      "actors": [
+        {
+          "id": "g",
+          "look": "granny",
+          "x": 900,
+          "y": 960,
+          "scale": 1.35,
+          "legs": "sit",
+          "facing": "left",
+          "arms": "write",
+          "mood": "sad",
+          "lookY": 0.6
+        }
+      ],
+      "props": [
+        {
+          "kind": "chair",
+          "x": 920,
+          "y": 960,
+          "scale": 0.82,
+          "flip": true,
+          "params": {
+            "color": "#3a2b20"
+          }
+        },
+        {
+          "kind": "table",
+          "x": 700,
+          "y": 960,
+          "front": true,
+          "params": {
+            "w": 380,
+            "h": 190,
+            "color": "#4a3627"
+          }
+        },
+        {
+          "kind": "envelope",
+          "x": 720,
+          "y": 740,
+          "scale": 0.8,
+          "at": "@бумажные",
+          "params": {
+            "tx": -280,
+            "ty": -400,
+            "fly": 3
+          }
+        }
+      ],
+      "sfx": [
+        {
+          "name": "whoosh",
+          "at": "@бумажные",
+          "volume": 0.5
+        }
+      ]
+    },
+    {
+      "note": "может ли это случиться?",
+      "start": "Так может ли это",
+      "fadeIn": 0.4,
+      "fadeOut": 0.4,
+      "card": {
+        "kind": "hook",
+        "text": "Может ли это случиться на самом деле?"
+      },
+      "sfx": [
+        {
+          "name": "whoosh",
+          "at": 0.1
+        }
+      ]
+    },
+    {
+      "note": "город гаснет",
+      "start": "А вот перестать",
+      "location": "city",
+      "params": {
+        "screensOffAt": 99,
+        "blackoutAt": "@вполне"
+      },
+      "camera": {
+        "zoom": [
+          1.1,
+          1
+        ],
+        "focus": [
+          960,
+          600
+        ]
+      },
+      "sfx": [
+        {
+          "name": "click",
+          "at": "@вполне"
+        }
+      ]
+    },
+    {
+      "note": "1859: телеграф и сияние",
+      "start": "В 1859 году",
+      "location": "telegraph",
+      "params": {
+        "sparkAt": 99
+      },
+      "camera": {
+        "zoom": [
+          1,
+          1.1
+        ],
+        "focus": [
+          [
+            1200,
+            500
+          ],
+          [
+            1100,
+            520
+          ]
+        ]
+      },
+      "actors": [
+        {
+          "id": "op",
+          "look": "oper",
+          "x": 600,
+          "y": 950,
+          "scale": 1.3,
+          "facing": "right",
+          "arms": "rest",
+          "mood": "neutral",
+          "lookX": 0.7,
+          "lookY": -0.4
+        }
+      ],
+      "overlays": [
+        {
+          "kind": "caption",
+          "text": "1859 · событие Керрингтона",
+          "at": 0.6
+        }
+      ]
+    },
+    {
+      "note": "провода искрят",
+      "start": "Телеграфные провода",
+      "location": "telegraph",
+      "params": {
+        "sparkAt": 0.4
+      },
+      "camera": {
+        "zoom": [
+          1.3,
+          1.4
+        ],
+        "focus": [
+          760,
+          560
+        ]
+      },
+      "actors": [
+        {
+          "id": "op",
+          "look": "oper",
+          "x": 600,
+          "y": 950,
+          "scale": 1.3,
+          "facing": "right",
+          "arms": "reach",
+          "mood": "neutral",
+          "keys": [
+            {
+              "at": "@операторов било",
+              "arms": "cheer",
+              "mood": "surprised"
+            },
+            {
+              "at": "@отключенные от батарей",
+              "arms": "shrug"
+            }
+          ]
+        }
+      ],
+      "sfx": [
+        {
+          "name": "zap",
+          "at": 0.4
+        },
+        {
+          "name": "zap",
+          "at": "@операторов било"
+        }
+      ]
+    },
+    {
+      "note": "телеграф был единственной электроникой",
+      "start": "Тогда телеграф был",
+      "location": "telegraph",
+      "params": {
+        "sparkAt": 0
+      },
+      "camera": {
+        "zoom": [
+          1,
+          1.05
+        ],
+        "focus": [
+          960,
+          540
+        ]
+      },
+      "actors": [
+        {
+          "id": "op",
+          "look": "oper",
+          "x": 600,
+          "y": 950,
+          "scale": 1.3,
+          "facing": "right",
+          "arms": "shrug",
+          "mood": "surprised"
+        }
+      ],
+      "fadeOut": 0.5
+    },
+    {
+      "note": "2012: выброс мимо Земли",
+      "start": "А 23 июля",
+      "fadeIn": 0.5,
+      "location": "space",
+      "params": {
+        "cmeAt": "@Солнце выбросило",
+        "earth": 0.85
+      },
+      "camera": {
+        "zoom": [
+          1,
+          1.05
+        ],
+        "focus": [
+          960,
+          540
+        ]
+      },
+      "overlays": [
+        {
+          "kind": "caption",
+          "text": "23 июля 2012",
+          "at": 0.5
+        }
+      ],
+      "sfx": [
+        {
+          "name": "whoosh",
+          "at": "@Солнце выбросило"
+        }
+      ]
+    },
+    {
+      "note": "на неделю раньше — по нам",
+      "start": "Случись выброс",
+      "location": "space",
+      "params": {
+        "cmeAt": 0.6,
+        "earth": 0.5
+      },
+      "camera": {
+        "zoom": [
+          1,
+          1.1
+        ],
+        "focus": [
+          1100,
+          540
+        ]
+      },
+      "sfx": [
+        {
+          "name": "rise",
+          "at": 0.6,
+          "volume": 0.6
+        }
+      ]
+    },
+    {
+      "note": "ущерб 2 трлн",
+      "start": "По оценке",
+      "location": "city",
+      "params": {
+        "screensOffAt": 99,
+        "blackoutAt": 0.6
+      },
+      "camera": {
+        "zoom": [
+          1,
+          1.08
+        ],
+        "focus": [
+          960,
+          600
+        ]
+      },
+      "overlays": [
+        {
+          "kind": "counter",
+          "from": 0,
+          "to": 2,
+          "suffix": " трлн $",
+          "label": "возможный ущерб — больше",
+          "at": "@может превысить",
+          "time": 1.5,
+          "x": 560,
+          "y": 330
+        },
+        {
+          "kind": "caption",
+          "text": "Национальная академия наук США",
+          "at": 0.8
+        }
+      ],
+      "sfx": [
+        {
+          "name": "click",
+          "at": 0.6
+        }
+      ]
+    },
+    {
+      "note": "кусок стекла",
+      "start": "Без спутников",
+      "location": "street",
+      "ambience": "rain",
+      "rain": 0.8,
+      "camera": {
+        "zoom": [
+          1.3,
+          1.4
+        ],
+        "focus": [
+          960,
+          620
+        ]
+      },
+      "actors": [
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": 960,
+          "y": 900,
+          "scale": 1.35,
+          "arms": "phone",
+          "mood": "sad",
+          "lookY": 0.6,
+          "rim": "#a9d4ff",
+          "rimSide": "right"
+        }
+      ],
+      "fadeOut": 0.8
+    },
+    {
+      "note": "финал: телефон на месте",
+      "start": "Так что завтра утром",
+      "fadeIn": 0.8,
+      "location": "bedroom",
+      "params": {
+        "tod": "dawn"
+      },
+      "ambience": "room",
+      "camera": {
+        "zoom": [
+          1.45,
+          1.35
+        ],
+        "focus": [
+          1010,
+          700
+        ]
+      },
+      "props": [
+        {
+          "kind": "phoneflat",
+          "x": 940,
+          "y": 760,
+          "scale": 1
+        }
+      ],
+      "actors": [
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": 1170,
+          "y": 905,
+          "scale": 1.35,
+          "legs": "sit",
+          "facing": "left",
+          "mood": "sleep",
+          "keys": [
+            {
+              "at": "@снова потянешься",
+              "arms": "reach",
+              "mood": "tired"
+            },
+            {
+              "at": "@будет на месте",
+              "mood": "neutral"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "note": "всё, что он делает",
+      "start": "Он разбудит тебя",
+      "location": "bedroom",
+      "params": {
+        "tod": "dawn"
+      },
+      "ambience": "room",
+      "camera": {
+        "zoom": [
+          1.2,
+          1.25
+        ],
+        "focus": [
+          1100,
+          600
+        ]
+      },
+      "props": [
+        {
+          "kind": "phoneflat",
+          "x": 940,
+          "y": 760,
+          "scale": 1
+        }
+      ],
+      "actors": [
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": 1170,
+          "y": 905,
+          "scale": 1.35,
+          "legs": "sit",
+          "facing": "left",
+          "arms": "reach",
+          "mood": "neutral",
+          "lookY": 0.5
+        }
+      ],
+      "texts": [
+        {
+          "kind": "notif",
+          "text": "Будильник · 7:00",
+          "x": 640,
+          "y": 330,
+          "at": "@разбудит"
+        },
+        {
+          "kind": "notif",
+          "text": "Оплата · кофе",
+          "x": 700,
+          "y": 430,
+          "at": "@оплатит кофе"
+        },
+        {
+          "kind": "notif",
+          "text": "Маршрут построен",
+          "x": 760,
+          "y": 530,
+          "at": "@проведёт по городу"
+        },
+        {
+          "kind": "notif",
+          "text": "Голосовое сообщение",
+          "x": 820,
+          "y": 630,
+          "at": "@сохранит голос"
+        }
+      ],
+      "sfx": [
+        {
+          "name": "ding",
+          "at": "@разбудит",
+          "volume": 0.5
+        },
+        {
+          "name": "ding",
+          "at": "@оплатит кофе",
+          "volume": 0.5
+        },
+        {
+          "name": "ding",
+          "at": "@проведёт по городу",
+          "volume": 0.5
+        },
+        {
+          "name": "ding",
+          "at": "@сохранит голос",
+          "volume": 0.5
+        }
+      ]
+    },
+    {
+      "note": "рука останавливается",
+      "start": "Только может хотя бы",
+      "location": "bedroom",
+      "params": {
+        "tod": "morning"
+      },
+      "ambience": "birds",
+      "camera": {
+        "zoom": [
+          1.4,
+          1.3
+        ],
+        "focus": [
+          1060,
+          660
+        ]
+      },
+      "props": [
+        {
+          "kind": "phoneflat",
+          "x": 940,
+          "y": 760,
+          "scale": 1
+        }
+      ],
+      "actors": [
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": 1170,
+          "y": 905,
+          "scale": 1.35,
+          "legs": "sit",
+          "facing": "left",
+          "arms": "reach",
+          "mood": "neutral",
+          "keys": [
+            {
+              "at": "@не возьмёшь",
+              "arms": "rest",
+              "lookX": -0.9,
+              "lookY": -0.4,
+              "mood": "happy"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "note": "окно",
+      "start": "Посмотришь в окно",
+      "location": "bedroom",
+      "params": {
+        "tod": "morning"
+      },
+      "ambience": "birds",
+      "camera": {
+        "zoom": [
+          1.25,
+          1.4
+        ],
+        "focus": [
+          700,
+          480
+        ]
+      },
+      "actors": [
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": 920,
+          "y": 960,
+          "scale": 1.4,
+          "facing": "left",
+          "arms": "rest",
+          "mood": "happy",
+          "lookY": -0.3,
+          "rim": "#ffe2b0",
+          "rimSide": "left"
+        }
+      ]
+    },
+    {
+      "note": "звонит маме по памяти",
+      "start": "позвонишь маме и наберёшь",
+      "location": "kitchen",
+      "params": {
+        "hour": 8.1
+      },
+      "ambience": "birds",
+      "camera": {
+        "zoom": [
+          1.3,
+          1.4
+        ],
+        "focus": [
+          1130,
+          560
+        ]
+      },
+      "props": [
+        {
+          "kind": "landline",
+          "x": 1250,
+          "y": 652,
+          "scale": 0.8,
+          "params": {
+            "handset": false
+          }
+        }
+      ],
+      "actors": [
+        {
+          "id": "hero",
+          "look": "hero",
+          "x": 1110,
+          "y": 965,
+          "scale": 1.4,
+          "facing": "right",
+          "arms": "ear",
+          "mood": "happy"
+        }
+      ],
+      "texts": [
+        {
+          "kind": "say",
+          "text": "Мам, привет!",
+          "actor": "hero",
+          "at": "@по памяти"
+        }
+      ],
+      "sfx": [
+        {
+          "name": "dial",
+          "at": 0.2,
+          "volume": 0.6
+        }
+      ]
+    },
+    {
+      "note": "Нина записывает твой номер",
+      "start": "А баба Нина на всякий",
+      "location": "entrance",
+      "camera": {
+        "zoom": [
+          1.3,
+          1.4
+        ],
+        "focus": [
+          760,
+          620
+        ]
+      },
+      "actors": [
+        {
+          "id": "nina",
+          "look": "nina",
+          "x": 760,
+          "y": 1000,
+          "scale": 1.4,
+          "facing": "right",
+          "arms": "write",
+          "mood": "happy",
+          "lookY": 0.5
+        }
+      ],
+      "props": [
+        {
+          "kind": "notebook",
+          "x": 770,
+          "y": 822,
+          "scale": 0.9,
+          "front": true,
+          "params": {
+            "lines": 8,
+            "writeAt": "@запишет в тетрадку"
+          }
+        }
+      ],
+      "fadeOut": 0.5
+    },
+    {
+      "note": "вопрос зрителю",
+      "start": "А что бы ты сделал",
+      "fadeIn": 0.5,
+      "card": {
+        "kind": "end",
+        "title": "А что бы ты сделал первым делом?",
+        "text": "Напиши в комментариях"
+      },
+      "sfx": [
+        {
+          "name": "ding",
+          "at": 0.3,
+          "volume": 0.5
+        }
+      ]
+    },
+    {
+      "note": "панчлайн",
+      "start": "Хотя подожди",
+      "fadeOut": 1.5,
+      "card": {
+        "kind": "hook",
+        "text": "…ты ведь смотришь это с телефона"
+      }
+    }
+  ]
+}

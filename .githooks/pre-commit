@@ -1,0 +1,4 @@
+#!/bin/sh
+# Перед коммитом: пересобрать плагин из template/ и добавить его в этот же коммит
+node pack.mjs || exit 1
+git add -A silhouette-studio .claude-plugin

@@ -1,0 +1,13 @@
+# тяжёлое и личное — на GitHub не уходит
+node_modules/
+template/out/
+template/data/
+template/public/
+template/voice/
+template/transcripts/
+dist/
+референсы/
+topics-history.md
+*.mp4
+*.mp3
+*.wav

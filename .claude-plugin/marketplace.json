@@ -1,0 +1,13 @@
+{
+  "name": "silhouette-studio",
+  "owner": {
+    "name": "Silhouette Studio"
+  },
+  "plugins": [
+    {
+      "name": "nomadapc",
+      "source": "./silhouette-studio/plugins/nomadapc",
+      "description": "2D-ролики с силуэтами в стиле Last Soul: тема, сценарий, раскадровка под озвучку, музыка и рендер MP4 — всё кодом."
+    }
+  ]
+}

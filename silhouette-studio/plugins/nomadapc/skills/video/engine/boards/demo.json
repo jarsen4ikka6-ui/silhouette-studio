@@ -1,0 +1,389 @@
+{
+  "id": "demo",
+  "mode": "story",
+  "language": "ru",
+  "music": [
+    {
+      "mood": "sad",
+      "from": 0
+    },
+    {
+      "mood": "hope",
+      "from": 21
+    }
+  ],
+  "scenes": [
+    {
+      "note": "хук-цитата",
+      "dur": 4.5,
+      "fadeOut": 0.6,
+      "card": {
+        "kind": "quote",
+        "text": "Пока мы откладываем жизнь, она проходит.",
+        "author": "Сенека"
+      }
+    },
+    {
+      "note": "ночь, телефон",
+      "dur": 4.5,
+      "fadeIn": 0.6,
+      "location": "bedroom",
+      "ambience": "rain-indoor",
+      "camera": {
+        "zoom": [
+          1,
+          1.06
+        ],
+        "focus": [
+          1100,
+          600
+        ]
+      },
+      "actors": [
+        {
+          "id": "hero",
+          "x": 1260,
+          "y": 905,
+          "scale": 1.35,
+          "legs": "sit",
+          "facing": "left",
+          "arms": "phone",
+          "mood": "tired",
+          "lookY": 0.7,
+          "rim": "#a9d4ff",
+          "rimSide": "right",
+          "look": {
+            "top": "hoodie",
+            "color": "#b8352a"
+          }
+        }
+      ],
+      "overlays": [
+        {
+          "kind": "clock",
+          "time": "2:14",
+          "ampm": "AM",
+          "at": 0.5
+        }
+      ],
+      "texts": [
+        {
+          "kind": "notif",
+          "text": "Новое видео для вас",
+          "actor": "hero",
+          "at": 2.2,
+          "dur": 2
+        }
+      ],
+      "sfx": [
+        {
+          "name": "ding",
+          "at": 2.2
+        }
+      ]
+    },
+    {
+      "note": "крупно лицо",
+      "dur": 3.5,
+      "location": "bedroom",
+      "ambience": "rain-indoor",
+      "camera": {
+        "zoom": [
+          2.3,
+          2.5
+        ],
+        "focus": [
+          1260,
+          600
+        ]
+      },
+      "actors": [
+        {
+          "id": "hero",
+          "x": 1260,
+          "y": 905,
+          "scale": 1.35,
+          "legs": "sit",
+          "facing": "left",
+          "arms": "phone",
+          "mood": "tired",
+          "lookY": 0.7,
+          "rim": "#a9d4ff",
+          "rimSide": "right",
+          "look": {
+            "top": "hoodie",
+            "color": "#b8352a"
+          }
+        }
+      ],
+      "texts": [
+        {
+          "kind": "think",
+          "text": "Ещё 5 минут…",
+          "actor": "hero",
+          "at": 0.6
+        }
+      ],
+      "sfx": [
+        {
+          "name": "sigh",
+          "at": 1.6
+        }
+      ]
+    },
+    {
+      "note": "утро, проспал",
+      "dur": 4,
+      "location": "kitchen",
+      "params": {
+        "crosses": 11,
+        "hour": 7.8
+      },
+      "ambience": "room",
+      "camera": {
+        "zoom": [
+          1.04,
+          1.12
+        ],
+        "focus": [
+          1080,
+          600
+        ]
+      },
+      "actors": [
+        {
+          "id": "hero",
+          "x": 1080,
+          "y": 965,
+          "scale": 1.4,
+          "arms": "mug",
+          "mood": "tired",
+          "lookY": 0.3,
+          "look": {
+            "top": "hoodie",
+            "color": "#b8352a"
+          }
+        }
+      ],
+      "overlays": [
+        {
+          "kind": "clock",
+          "time": "7:48",
+          "ampm": "AM",
+          "at": 0.2,
+          "dur": 1.8
+        }
+      ],
+      "texts": [
+        {
+          "kind": "say",
+          "text": "Опять проспал…",
+          "actor": "hero",
+          "at": 1.6
+        }
+      ],
+      "sfx": [
+        {
+          "name": "alarm",
+          "at": 0
+        },
+        {
+          "name": "tick",
+          "at": 0.3
+        }
+      ]
+    },
+    {
+      "note": "улица, дождь",
+      "dur": 4.5,
+      "location": "street",
+      "rain": true,
+      "ambience": "rain",
+      "camera": {
+        "zoom": 1.1,
+        "focus": [
+          [
+            700,
+            560
+          ],
+          [
+            1080,
+            560
+          ]
+        ]
+      },
+      "actors": [
+        {
+          "id": "hero",
+          "x": [
+            300,
+            1300
+          ],
+          "y": 872,
+          "scale": 1.25,
+          "facing": "right",
+          "legs": "walk",
+          "arms": "walk",
+          "mood": "sad",
+          "lookY": 0.4,
+          "rim": "#ffd98a",
+          "rimSide": "left",
+          "look": {
+            "top": "hoodie",
+            "color": "#b8352a"
+          }
+        }
+      ],
+      "texts": [
+        {
+          "kind": "think",
+          "text": "Завтра лягу пораньше.",
+          "actor": "hero",
+          "at": 1.3
+        }
+      ],
+      "fadeOut": 0.5
+    },
+    {
+      "note": "поворот: откладывает телефон",
+      "dur": 4.5,
+      "fadeIn": 0.5,
+      "location": "bedroom",
+      "params": {
+        "lamp": true,
+        "lampOffAt": 3.7
+      },
+      "ambience": "rain-indoor",
+      "camera": {
+        "zoom": [
+          1.12,
+          1.2
+        ],
+        "focus": [
+          1120,
+          620
+        ]
+      },
+      "actors": [
+        {
+          "id": "hero",
+          "x": 1260,
+          "y": 905,
+          "scale": 1.35,
+          "legs": "sit",
+          "facing": "left",
+          "arms": "phone",
+          "mood": "tired",
+          "lookY": 0.7,
+          "rim": "#ffcf87",
+          "rimSide": "left",
+          "phoneLight": true,
+          "look": {
+            "top": "hoodie",
+            "color": "#b8352a"
+          },
+          "keys": [
+            {
+              "at": 1.2,
+              "arms": "reach",
+              "mood": "neutral",
+              "lookX": -0.8,
+              "lookY": 0.2
+            },
+            {
+              "at": 2,
+              "arms": "rest",
+              "lookX": 0,
+              "lookY": 0
+            },
+            {
+              "at": 3.9,
+              "mood": "sleep"
+            }
+          ]
+        }
+      ],
+      "overlays": [
+        {
+          "kind": "clock",
+          "time": "10:30",
+          "ampm": "PM",
+          "at": 0.2,
+          "dur": 1.6
+        }
+      ],
+      "texts": [
+        {
+          "kind": "say",
+          "text": "Хватит.",
+          "actor": "hero",
+          "at": 2.2,
+          "dur": 1.4
+        }
+      ],
+      "sfx": [
+        {
+          "name": "click",
+          "at": 3.7
+        }
+      ],
+      "fadeOut": 0.7
+    },
+    {
+      "note": "финал: новое утро",
+      "dur": 4.5,
+      "fadeIn": 1,
+      "location": "meadow",
+      "ambience": "birds",
+      "vignette": 0.35,
+      "camera": {
+        "zoom": [
+          1,
+          1.08
+        ],
+        "focus": [
+          960,
+          560
+        ]
+      },
+      "actors": [
+        {
+          "id": "hero",
+          "x": 960,
+          "y": 805,
+          "scale": 1.3,
+          "arms": "cheer",
+          "mood": "happy",
+          "look": {
+            "top": "hoodie",
+            "color": "#f2c230"
+          }
+        }
+      ],
+      "texts": [
+        {
+          "kind": "say",
+          "text": "Доброе утро!",
+          "actor": "hero",
+          "at": 1.2
+        }
+      ],
+      "sfx": [
+        {
+          "name": "rise",
+          "at": 0
+        }
+      ],
+      "fadeOut": 0.8
+    },
+    {
+      "note": "финальная карточка",
+      "dur": 5,
+      "card": {
+        "kind": "end",
+        "title": "Ещё 5 минут",
+        "text": "Сон — не потерянное время. С него начинается завтра."
+      }
+    }
+  ]
+}
