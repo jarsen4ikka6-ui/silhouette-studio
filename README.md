@@ -1,4 +1,4 @@
-# Silhouette Studio — плагин для Claude Code
+# Silhouette Studio — плагин nomadapc для Claude Code
 
 Делает 2D-ролики с силуэтами для YouTube (1920×1080) в стиле Last Soul. Всё рисуется и звучит кодом: персонажи, локации, музыка, звуки.
 
