@@ -1,8 +1,8 @@
 // Расшифровка озвучки с временем каждого слова (Whisper на видеокарте через WebGPU).
-// Запуск: npm run transcribe -- <ролик> --lang ru [--file voice/файл.mp3] [--model large-v3-turbo]
+// Запуск: npm run transcribe -- <ролик> [--lang ru] [--file voice/файл.mp3] [--model large-v3-turbo]
 // <ролик> — короткое имя латиницей (01-bez-telefonov), то же, что у доски boards/<ролик>.json
-// --lang обязателен (ru, en, es, de, …): Whisper не умеет сам определять язык,
-// а с неверным языком вместо текста выходит каша или перевод.
+// --lang (ru, en, es, de, …) можно не писать: тогда язык определяется по первым 30 секундам записи.
+// С неверным языком вместо текста выходит каша или перевод, поэтому найденный язык печатается.
 // Результат: public/audio/<ролик>.<ext>, transcripts/<ролик>.json, transcripts/<ролик>.txt
 import { registerMediabunnyServer } from "@mediabunny/server";
 import {
@@ -29,14 +29,10 @@ const { values, positionals } = parseArgs({
   },
 });
 
-if (!values.lang) {
-  throw new Error("Укажи язык озвучки: npm run transcribe -- <файл> --lang ru  (или en, es, de…). Язык спроси у пользователя — не угадывай.");
-}
-
 const AUDIO_EXT = [".mp3", ".wav", ".m4a", ".aac", ".ogg", ".flac", ".mp4", ".mov"];
 
 const name = positionals[0];
-if (!name || !/^[a-zA-Z0-9-]+$/.test(name)) throw new Error("Укажи имя ролика латиницей: npm run transcribe -- 01-bez-telefonov --lang ru");
+if (!name || !/^[a-zA-Z0-9-]+$/.test(name)) throw new Error("Укажи имя ролика латиницей: npm run transcribe -- 01-bez-telefonov");
 let file = values.file;
 if (!file) {
   // ищем озвучку в папке voice/: файл с именем ролика, иначе единственный аудиофайл
@@ -100,11 +96,52 @@ env.cacheDir = path.join(os.homedir(), ".cache", "silhouette-video", "whisper");
 await mkdir(env.cacheDir, { recursive: true });
 
 const model = values.model as WhisperWebGpuModel;
-console.log(`Модель ${model}, язык ${values.lang}, длина ${duration.toFixed(1)} c. Модель: ${env.cacheDir}`);
+console.log(`Модель ${model}, длина ${duration.toFixed(1)} c. Модель: ${env.cacheDir}`);
 await downloadWhisperModel({ model });
+
+// Библиотека Remotion сама язык не определяет, поэтому делаем это отдельно: тот же Whisper
+// слушает первые 30 секунд и говорит, какой языковой токен идёт первым
+async function detectLanguage(): Promise<{ code: string; top: string }> {
+  const t = await import("@huggingface/transformers");
+  const saved = { remoteHost: t.env.remoteHost, remotePathTemplate: t.env.remotePathTemplate };
+  // файлы модели лежат в кэше под адресом Remotion — берём их оттуда же, без нового скачивания
+  t.env.remoteHost = "https://remotion.media/";
+  t.env.remotePathTemplate = "models/{model}/";
+  const dtype = model === "large-v3-turbo" ? { encoder_model: "fp16", decoder_model_merged: "q4" } : { encoder_model: "fp32", decoder_model_merged: "q4" };
+  const asr: any = await t.pipeline("automatic-speech-recognition", `whisper-${model}_timestamped-v1`, { device: "webgpu", dtype: dtype as any });
+  try {
+    const clip = channelWaveform.subarray(0, WHISPER_WEBGPU_SAMPLE_RATE * 30);
+    const { input_features } = await asr.processor(clip);
+    const cfg = asr.model.generation_config;
+    const ids = BigInt64Array.from([BigInt(cfg.decoder_start_token_id)]);
+    const { logits } = await asr.model({ input_features, decoder_input_ids: new t.Tensor("int64", ids, [1, 1]) });
+    const row = logits.data as Float32Array;
+    const langs = Object.entries(cfg.lang_to_id as Record<string, number>).map(([tok, id]) => ({ code: tok.slice(2, -2), score: row[id] }));
+    const max = Math.max(...langs.map((l) => l.score));
+    const sum = langs.reduce((a, l) => a + Math.exp(l.score - max), 0);
+    langs.sort((a, b) => b.score - a.score);
+    const top = langs.slice(0, 3).map((l) => `${l.code} ${Math.round((Math.exp(l.score - max) / sum) * 100)}%`).join(", ");
+    return { code: langs[0].code, top };
+  } finally {
+    await asr.dispose();
+    Object.assign(t.env, saved);
+  }
+}
+
+let language = values.lang;
+if (!language) {
+  if (model.endsWith(".en")) language = "en";
+  else {
+    console.log("Определяю язык по первым 30 секундам...");
+    const found = await detectLanguage();
+    language = found.code;
+    console.log(`Язык озвучки: ${language} (${found.top})`);
+  }
+}
+
 await using handle = await loadWhisperModel({ model });
-console.log("Распознаю речь...");
-const result = await transcribe({ channelWaveform, model, language: values.lang });
+console.log(`Распознаю речь (${language})...`);
+const result = await transcribe({ channelWaveform, model, language });
 const { captions } = toCaptions({ whisperWebGpuOutput: result });
 
 const words = captions
@@ -131,8 +168,8 @@ words.forEach((w, i) => {
 });
 
 await mkdir("transcripts", { recursive: true });
-await writeFile(`transcripts/${name}.json`, JSON.stringify({ duration: +duration.toFixed(3), voice: voicePath, language: values.lang, words }, null, 2));
+await writeFile(`transcripts/${name}.json`, JSON.stringify({ duration: +duration.toFixed(3), voice: voicePath, language, words }, null, 2));
 await writeFile(`transcripts/${name}.txt`, `duration: ${duration.toFixed(2)} s\nvoice: ${voicePath}\n\n${lines.join("\n")}\n`);
 console.log(`Готово: ${words.length} слов, ${lines.length} фраз -> transcripts/${name}.json, transcripts/${name}.txt`);
-console.log(`\nНачало текста (${values.lang}):\n${lines.slice(0, 3).join("\n")}`);
-console.log("\nПроверь: текст осмысленный и на том языке, на котором говорят в озвучке? Если нет — язык указан неверно, перезапусти с правильным --lang.");
+console.log(`\nНачало текста (${language}):\n${lines.slice(0, 3).join("\n")}`);
+console.log("\nПроверь: текст осмысленный и на том языке, на котором говорят в озвучке? Если нет — язык определён неверно, перезапусти с правильным --lang.");
