@@ -2,6 +2,7 @@
 // (или его центр, если он висит в воздухе). Новые предметы под сценарии пишем в src/custom/props.tsx.
 import React, { useId } from "react";
 import { CUSTOM_PROPS } from "./custom/props";
+import { PROPS3 } from "./props3";
 import type { Prop } from "./types";
 import { along, clamp, ease, fadeWindow, rand } from "./util";
 
@@ -310,6 +311,7 @@ export const PROPS: Record<string, React.FC<PP>> = {
   atm: Atm,
   bag: Bag,
   bench: Bench,
+  ...PROPS3,
   ...CUSTOM_PROPS,
 };
 

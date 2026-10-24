@@ -4,6 +4,7 @@
 import React, { useId } from "react";
 import { CUSTOM_LOCATIONS } from "./custom/locations";
 import { LOCATIONS2 } from "./locations2";
+import { LOCATIONS3 } from "./locations3";
 import { clamp, rand } from "./util";
 
 type P = { t: number; params: Record<string, number | string | boolean> };
@@ -412,5 +413,6 @@ export const LOCATIONS: Record<string, React.FC<P>> = {
   street: Street,
   meadow: Meadow,
   ...LOCATIONS2,
+  ...LOCATIONS3,
   ...CUSTOM_LOCATIONS,
 };

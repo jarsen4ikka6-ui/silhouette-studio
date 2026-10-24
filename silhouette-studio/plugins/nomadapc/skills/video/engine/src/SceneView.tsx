@@ -1,37 +1,124 @@
-// Одна сцена: локация + персонажи под камерой, сверху эффекты и текст
+// Одна сцена: локация + персонажи под камерой, сверху передний план, плёнка, инфографика и текст
 import React from "react";
 import { AbsoluteFill, useCurrentFrame, useVideoConfig } from "remotion";
-import { Character, headTop } from "./Character";
-import { Rain, Vignette } from "./Fx";
+import { bodyBox, Character, headTop } from "./Character";
+import { Foreground, LookLayer, OverShoulder, Rain, Vignette } from "./Fx";
 import { LOCATIONS } from "./locations";
 import { PropView } from "./props";
-import { CardView, OverlayView, SpeechText } from "./Texts";
-import type { Scene } from "./types";
-import { along, clamp } from "./util";
+import { CardView, OverlayView, SCENE_OVERLAYS, SceneOverlay, SpeechText } from "./Texts";
+import type { Actor, Scene, ShotSpec } from "./types";
+import { along, clamp, ease } from "./util";
 
 const W = 1920;
 const H = 1080;
 
-// Камера: зум и точка фокуса, которые плавно меняются за сцену
-const cameraAt = (scene: Scene, p: number) => {
+type Placed = { a: Actor; x: number; y: number };
+
+// Какую долю роста героя показывает план (высота кадра = рост × k)
+const SHOT_K: Record<string, number> = { full: 1.75, medium: 1.15, close: 0.8, face: 0.55 };
+// Размытие фона по умолчанию (px экрана)
+const SHOT_DOF: Record<string, number> = { wide: 0, full: 0, medium: 2, close: 5, face: 7, insert: 3, pov: 0, ots: 4 };
+
+// Активный план в момент t: базовый или последняя склейка до t
+const activeShot = (scene: Scene, t: number) => {
   const c = scene.camera ?? {};
-  const z = Math.max(1, along(c.zoom, p, 1));
+  const cuts = [...(c.cuts ?? [])].sort((a, b) => a.at - b.at);
+  const index = cuts.filter((x) => t >= x.at).length;
+  const spec: ShotSpec = index ? cuts[index - 1] : c;
+  const from = index ? cuts[index - 1].at : 0;
+  const to = index < cuts.length ? cuts[index].at : scene.dur;
+  return { spec, from, to, index };
+};
+
+// «Камера в руке»: плавное дрожание из суммы синусов (одинаковое на каждом рендере)
+const shake = (t: number, seed: number) => Math.sin(t * 1.3 + seed) * 0.6 + Math.sin(t * 2.9 + seed * 2.1) * 0.3 + Math.sin(t * 5.3 + seed * 0.7) * 0.1;
+
+const cameraAt = (scene: Scene, t: number, actors: Placed[]) => {
+  const c = scene.camera ?? {};
+  const legacy = c.zoom !== undefined || c.focus !== undefined;
+  const { spec, from, to, index } = activeShot(scene, t);
+  const p = clamp((t - from) / Math.max(0.01, to - from));
+  let z = 1;
   let fx = W / 2;
   let fy = H / 2;
-  if (c.focus) {
-    const f = c.focus as [number, number] | [[number, number], [number, number]];
-    if (Array.isArray(f[0])) {
-      const [a, b] = f as [[number, number], [number, number]];
-      fx = along([a[0], b[0]], p, fx);
-      fy = along([a[1], b[1]], p, fy);
-    } else {
-      [fx, fy] = f as [number, number];
+  const shot = spec.shot ?? (legacy ? undefined : "wide");
+
+  if (legacy && index === 0 && !c.shot) {
+    const pp = clamp(t / scene.dur);
+    z = Math.max(1, along(c.zoom, pp, 1));
+    if (c.focus) {
+      const f = c.focus as [number, number] | [[number, number], [number, number]];
+      if (Array.isArray(f[0])) {
+        const [a, b] = f as [[number, number], [number, number]];
+        fx = along([a[0], b[0]], pp, fx);
+        fy = along([a[1], b[1]], pp, fy);
+      } else [fx, fy] = f as [number, number];
     }
+  } else {
+    const who = typeof spec.on === "string" ? actors.find((x) => x.a.id === spec.on) : undefined;
+    const pt = Array.isArray(spec.on) ? spec.on : null;
+    const target = who ?? (shot && SHOT_K[shot] ? actors[0] : undefined);
+    if (shot === "insert" || shot === "pov" || (shot === "wide" && spec.size)) {
+      const size = spec.size ?? (shot === "wide" ? W : 700);
+      z = W / size;
+      if (pt) [fx, fy] = pt;
+      else if (target) {
+        const b = bodyBox(target.a, target.x, target.y);
+        fx = b.headX;
+        fy = (b.top + b.feet) / 2;
+      }
+    } else if (shot === "ots") {
+      // через плечо: держим цель средним планом, а плечо героя рисуем поверх
+      if (target) {
+        const b = bodyBox(target.a, target.x, target.y);
+        z = H / (b.h * 1.05);
+        fx = b.headX;
+        fy = b.headY + (0.14 * H) / z;
+      } else if (pt) {
+        z = W / (spec.size ?? 900);
+        [fx, fy] = pt;
+      }
+    } else if (shot && SHOT_K[shot] && target) {
+      const b = bodyBox(target.a, target.x, target.y);
+      z = H / (b.h * SHOT_K[shot]);
+      const dir = target.a.facing === "left" ? -1 : target.a.facing === "right" ? 1 : 0;
+      // запас места туда, куда смотрит герой
+      fx = b.headX + (dir * W * (shot === "full" ? 0.12 : 0.16)) / z;
+      fy = shot === "full" ? (b.top + b.feet) / 2 - (0.02 * H) / z : b.headY + ((shot === "face" ? 0.06 : 0.14) * H) / z;
+    } else if (pt) [fx, fy] = pt;
   }
-  // не даём камере выехать за край картинки
+
+  // движение камеры за время плана
+  const move = spec.move ?? (legacy && index === 0 ? "static" : "push");
+  const amt = spec.amount ?? 0.06;
+  const e = ease(p);
+  let dx = 0;
+  let dy = 0;
+  if (move === "push") z *= 1 + amt * e;
+  if (move === "pull") z *= 1 + amt * (1 - e);
+  if (move === "left") dx = -amt * 2 * (e - 0.5);
+  if (move === "right") dx = amt * 2 * (e - 0.5);
+  if (move === "up") dy = -amt * 2 * (e - 0.5);
+  if (move === "down") dy = amt * 2 * (e - 0.5);
+  if (move === "drift") {
+    z *= 1 + amt * 0.5 * e;
+    dx = Math.sin(t * 0.35) * amt * 0.4;
+  }
+  const hand = spec.handheld ?? (shot === "pov" ? 0.5 : 0);
+  if (dx || dy || hand) z = Math.max(z, 1.04 + hand * 0.03);
+  fx += (dx * W) / z;
+  fy += (dy * H) / z;
+  let rot = 0;
+  if (hand > 0) {
+    fx += (shake(t, 1) * 14 * hand) / z;
+    fy += (shake(t, 5) * 10 * hand) / z;
+    rot = shake(t, 9) * 0.6 * hand;
+  }
+  z = clamp(z, 1, 8);
   fx = clamp(fx, W / 2 / z, W - W / 2 / z);
   fy = clamp(fy, H / 2 / z, H - H / 2 / z);
-  return { z, fx, fy };
+  const dof = spec.dof ?? (shot ? SHOT_DOF[shot] ?? 0 : 0);
+  return { z, fx, fy, rot, dof, shot, spec };
 };
 
 export const SceneView: React.FC<{ scene: Scene }> = ({ scene }) => {
@@ -52,25 +139,40 @@ export const SceneView: React.FC<{ scene: Scene }> = ({ scene }) => {
   }
 
   const Loc = LOCATIONS[scene.location ?? "bedroom"] ?? LOCATIONS.bedroom;
-  const cam = cameraAt(scene, p);
+  const actors: Placed[] = (scene.actors ?? []).map((a) => ({ a, x: along(a.x, p, W / 2), y: along(a.y, p, 900) }));
+  const cam = cameraAt(scene, t, actors);
   const toScreen = (x: number, y: number) => ({ x: (x - cam.fx) * cam.z + W / 2, y: (y - cam.fy) * cam.z + H / 2 });
-  const actors = (scene.actors ?? []).map((a) => ({ a, x: along(a.x, p, W / 2), y: along(a.y, p, 900) }));
+  const overlays = scene.overlays ?? [];
+  const inScene = overlays.filter((o) => SCENE_OVERLAYS.includes(o.kind));
+  const onScreen = overlays.filter((o) => !SCENE_OVERLAYS.includes(o.kind));
+  const look = scene.look === false ? null : scene.look ?? {};
+  // фон размывается в координатах сцены, поэтому делим на зум
+  const bgBlur = cam.dof / cam.z;
+  const over = cam.shot === "ots" && cam.spec.over ? actors.find((x) => x.a.id === cam.spec.over) : undefined;
 
   return (
     <AbsoluteFill style={{ background: "#000", opacity, overflow: "hidden" }}>
-      <div style={{ position: "absolute", width: W, height: H, transformOrigin: "0 0", transform: `translate(${W / 2}px, ${H / 2}px) scale(${cam.z}) translate(${-cam.fx}px, ${-cam.fy}px)` }}>
-        <Loc t={t} params={scene.params ?? {}} />
+      <div style={{ position: "absolute", width: W, height: H, transformOrigin: "0 0", transform: `translate(${W / 2}px, ${H / 2}px) rotate(${cam.rot}deg) scale(${cam.z}) translate(${-cam.fx}px, ${-cam.fy}px)` }}>
+        <div style={{ position: "absolute", inset: 0, filter: bgBlur > 0.05 ? `blur(${bgBlur}px)` : undefined }}>
+          <Loc t={t} params={scene.params ?? {}} />
+        </div>
         <svg viewBox={`0 0 ${W} ${H}`} width={W} height={H} style={{ position: "absolute", inset: 0, overflow: "visible" }}>
+          {inScene.map((o, i) => <SceneOverlay key={`o${i}`} o={o} t={t} />)}
           {(scene.props ?? []).filter((pr) => !pr.front).map((pr, i) => <PropView key={`b${i}`} prop={pr} t={t} p={p} />)}
-          {actors.map(({ a, x, y }) => (
+          {actors.filter((x) => x !== over).map(({ a, x, y }) => (
             <Character key={a.id} actor={a} t={t} x={x} y={y} />
           ))}
           {(scene.props ?? []).filter((pr) => pr.front).map((pr, i) => <PropView key={`f${i}`} prop={pr} t={t} p={p} />)}
         </svg>
       </div>
+      {over ? <OverShoulder actor={over.a} t={t} side={cam.spec.overSide ?? (over.x < cam.fx ? "left" : "right")} /> : null}
+      {(scene.fg ?? []).map((f, i) => (
+        <Foreground key={i} f={f} sx={(f.x - cam.fx) * cam.z * 1.35 + W / 2} t={t} />
+      ))}
       {scene.rain ? <Rain t={t} density={typeof scene.rain === "number" ? scene.rain : 1} /> : null}
-      <Vignette strength={scene.vignette ?? 0.6} />
-      {(scene.overlays ?? []).map((o, i) => (
+      {look ? <LookLayer look={look} t={t} frame={frame} /> : null}
+      <Vignette strength={scene.vignette ?? (cam.shot === "pov" ? 0.75 : 0.45)} />
+      {onScreen.map((o, i) => (
         <OverlayView key={i} o={o} t={t} />
       ))}
       {(scene.texts ?? []).map((tx, i) => {
@@ -81,6 +183,7 @@ export const SceneView: React.FC<{ scene: Scene }> = ({ scene }) => {
           pos = toScreen(top.x, top.y - 30);
           if (tx.kind === "notif") pos = toScreen(top.x + 90 * (who.a.scale ?? 1), top.y + 60);
           pos.y = Math.max(tx.kind === "notif" ? 200 : 150, pos.y);
+          pos.x = clamp(pos.x, 260, W - 260);
         }
         if (tx.kind === "offscreen" && tx.x === undefined) pos = { x: tx.side === "left" ? 330 : W - 330, y: 360 };
         return <SpeechText key={i} item={tx} t={t} x={pos.x} y={pos.y} />;

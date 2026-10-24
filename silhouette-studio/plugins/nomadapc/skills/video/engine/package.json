@@ -1,7 +1,7 @@
 {
   "name": "silhouette-video",
-  "version": "0.1.0+09388d10",
-  "description": "2D silhouette short films drawn with code (Last Soul style): Remotion",
+  "version": "0.2.0+fb3a04b8",
+  "description": "2D stick-figure explainer videos drawn with code (Awaken style): Remotion",
   "private": true,
   "type": "module",
   "scripts": {
