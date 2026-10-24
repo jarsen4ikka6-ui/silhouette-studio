@@ -1,7 +1,7 @@
 // Атмосфера поверх кадра: дождь, виньетка, плёнка (зерно, пыль, засвет), размытый передний план, плечо «через плечо»
 import React, { useId } from "react";
 import { AbsoluteFill } from "remotion";
-import { BODY, darken, lighten } from "./Character";
+import { darken, hairOf, lighten, skinOf } from "./Character";
 import type { Actor, Foreground as Fg, LookFx } from "./types";
 import { rand } from "./util";
 
@@ -194,7 +194,9 @@ export const OverShoulder: React.FC<{ actor: Actor; t: number; side: "left" | "r
       <g filter={`url(#os${u})`} transform={`translate(${cx} ${by})`}>
         {rim ? <circle cx={s * 6} cy={560} r={238} fill={rim} /> : null}
         <path d={`M ${-s * 330} ${H + 40} Q ${-s * 320} 820 ${-s * 120} 780 L ${s * 200} 770 Q ${s * 380} 800 ${s * 400} ${H + 40} Z`} fill={darken(cloth, 0.15)} />
-        <circle cx={0} cy={560} r={236} fill={BODY} />
+        <circle cx={0} cy={560} r={236} fill={skinOf(actor.look)} />
+        {/* затылок: волосы закрывают почти всю голову */}
+        {actor.look?.hair === "none" ? null : <path d={`M ${-236} 600 A 236 236 0 1 1 236 600 Q 0 690 ${-236} 600 Z`} fill={actor.look?.hair === "scarf" ? hairOf(actor.look).band : hairOf(actor.look).hair} />}
       </g>
     </svg>
   );

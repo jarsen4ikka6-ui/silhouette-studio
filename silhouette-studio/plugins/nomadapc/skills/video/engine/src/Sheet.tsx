@@ -1,6 +1,7 @@
 // Лист превью: 9 сцен ролика сеткой 3×3 с номерами — чтобы проверить весь ролик глазами за пару картинок
 import React from "react";
 import { AbsoluteFill, Freeze } from "remotion";
+import { HeroSkin, skinOf } from "./Character";
 import { PROJECTS } from "./projects";
 import { SceneView } from "./SceneView";
 import { timeline } from "./Video";
@@ -10,6 +11,7 @@ export const SheetView: React.FC<{ id: string; page: number; at: number }> = ({ 
   if (!project) return <AbsoluteFill style={{ background: "#000", color: "#fff", fontSize: 48 }}>Нет ролика {id}</AbsoluteFill>;
   const cells = timeline(project).slice(page * 9, page * 9 + 9);
   return (
+    <HeroSkin.Provider value={skinOf(project.hero)}>
     <AbsoluteFill style={{ background: "#000" }}>
       {cells.map(({ scene }, i) => {
         const n = page * 9 + i + 1;
@@ -26,5 +28,6 @@ export const SheetView: React.FC<{ id: string; page: number; at: number }> = ({ 
         );
       })}
     </AbsoluteFill>
+    </HeroSkin.Provider>
   );
 };

@@ -2,13 +2,15 @@
 import { Audio } from "@remotion/media";
 import React, { useMemo } from "react";
 import { AbsoluteFill, Sequence, staticFile, useVideoConfig } from "remotion";
+import { HeroSkin, skinOf } from "./Character";
 import { SceneView } from "./SceneView";
 import type { Project, Sfx } from "./types";
 import { dbToGain } from "./util";
 
 // Звонкие звуки приглушаем отдельно, чтобы они не выпрыгивали из микса
 const SFX_GAIN: Record<string, number> = { ding: 0.5, alarm: 0.45, buzz: 0.6, step: 0.55, birds: 0.6, tick: 0.5, click: 0.7, rise: 0.7, whoosh: 0.7, sigh: 0.9, zap: 0.55, dial: 0.4 };
-const AMBIENCE_GAIN: Record<string, number> = { rain: 0.55, "rain-indoor": 0.22, birds: 0.35, room: 0.2, crowd: 0.3 };
+// фоновые звуки сцены. Шума толпы («crowd») нет и не будет: он звучит как ветер и портит ролик — такой фон просто не играет
+const AMBIENCE_GAIN: Record<string, number> = { rain: 0.55, "rain-indoor": 0.22, birds: 0.35, room: 0.2 };
 
 export const timeline = (project: Project) => {
   let acc = 0;
@@ -51,6 +53,7 @@ export const FilmVideo: React.FC<{ project: Project }> = ({ project }) => {
   const parts = project.music ?? [];
 
   return (
+    <HeroSkin.Provider value={skinOf(project.hero)}>
     <AbsoluteFill style={{ background: "#000" }}>
       {tl.map(({ scene, start, end }, i) => {
         const from = Math.round(start * fps);
@@ -58,7 +61,7 @@ export const FilmVideo: React.FC<{ project: Project }> = ({ project }) => {
         return (
           <Sequence key={i} from={from} durationInFrames={dur} premountFor={Math.round(fps * 0.5)} name={`${i + 1}. ${scene.card ? scene.card.kind : scene.location} ${scene.note ?? ""}`}>
             <SceneView scene={scene} />
-            {scene.ambience ? (
+            {scene.ambience && AMBIENCE_GAIN[scene.ambience] ? (
               <Audio src={staticFile(`sfx/${scene.ambience === "rain-indoor" ? "rain" : scene.ambience}.wav`)} loop volume={(f) => sfxGain * (AMBIENCE_GAIN[scene.ambience!] ?? 0.3) * Math.min(1, f / 8, (dur - f) / 8)} />
             ) : null}
           </Sequence>
@@ -93,5 +96,6 @@ export const FilmVideo: React.FC<{ project: Project }> = ({ project }) => {
         </Sequence>
       ))}
     </AbsoluteFill>
+    </HeroSkin.Provider>
   );
 };

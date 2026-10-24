@@ -244,7 +244,6 @@
       "note": "205 раз в день",
       "start": "По одному американскому",
       "location": "crossroad",
-      "ambience": "crowd",
       "camera": {
         "zoom": [
           1,
@@ -325,7 +324,6 @@
       "note": "раз в 5 минут",
       "start": "Это примерно раз",
       "location": "crossroad",
-      "ambience": "crowd",
       "camera": {
         "zoom": [
           1.25,
@@ -581,7 +579,6 @@
       "note": "хлопает по карману",
       "start": "Ты выбегаешь на улицу",
       "location": "crossroad",
-      "ambience": "crowd",
       "camera": {
         "zoom": [
           1.05,
@@ -651,7 +648,6 @@
       "note": "фантомная вибрация",
       "start": "А иногда кажется",
       "location": "crossroad",
-      "ambience": "crowd",
       "camera": {
         "zoom": [
           1.5,
@@ -703,7 +699,6 @@
       "note": "термин",
       "start": "Это не сбой",
       "location": "crossroad",
-      "ambience": "crowd",
       "camera": {
         "zoom": [
           1.3,
@@ -746,7 +741,6 @@
       "note": "89% студентов",
       "start": "В одном исследовании",
       "location": "crossroad",
-      "ambience": "crowd",
       "camera": {
         "zoom": [
           1,
@@ -846,7 +840,6 @@
       "note": "кофейня: пустые ладони",
       "start": "Дальше кофе",
       "location": "cafe",
-      "ambience": "crowd",
       "camera": {
         "zoom": [
           1,
@@ -921,7 +914,6 @@
       "note": "нечем платить",
       "start": "Многие платили телефоном",
       "location": "cafe",
-      "ambience": "crowd",
       "camera": {
         "zoom": [
           1.35,
@@ -2155,7 +2147,6 @@
       "note": "метро: смотрят друг на друга",
       "start": "В метро люди",
       "location": "metro",
-      "ambience": "crowd",
       "camera": {
         "zoom": [
           1,
@@ -2240,7 +2231,6 @@
       "note": "читает рекламу",
       "start": "Кто то по третьему",
       "location": "metro",
-      "ambience": "crowd",
       "camera": {
         "zoom": [
           1.5,

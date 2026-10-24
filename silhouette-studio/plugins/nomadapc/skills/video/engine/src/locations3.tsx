@@ -2,6 +2,7 @@
 // Пол везде на y≈900 (там стоят ступни персонажей). Холст 1920×1080.
 // cafe-street, classroom, living, lab-dark, gallery, porch, village, savanna, island, forest, studio
 import React, { useId } from "react";
+import { SKINS } from "./Character";
 import { CHALK, INTER } from "./fonts";
 import { clamp, rand } from "./util";
 
@@ -437,13 +438,17 @@ const KingPortrait: React.FC<{ x: number; y: number; w: number; h: number; name?
     <Glow x={x + w / 2} y={y + h * 0.4} r={w * 0.6} color="#d9b47a" o={0.35} />
     <path d={`M ${x + w * 0.12} ${y + h} L ${x + w * 0.28} ${y + h * 0.62} L ${x + w * 0.72} ${y + h * 0.62} L ${x + w * 0.88} ${y + h} Z`} fill="#5e2638" />
     <rect x={x + w * 0.46} y={y + h * 0.62} width={w * 0.08} height={h * 0.38} fill="#d9a83a" />
-    <ellipse cx={x + w / 2} cy={y + h * 0.42} rx={w * 0.17} ry={h * 0.19} fill="#0d0d10" />
+    <ellipse cx={x + w / 2} cy={y + h * 0.42} rx={w * 0.17} ry={h * 0.19} fill={SKINS.fair} />
     {Array.from({ length: 7 }, (_, i) => <ellipse key={i} cx={x + w * (0.27 + i * 0.077)} cy={y + h * 0.61} rx={w * 0.06} ry={h * 0.035} fill="#fbf6ee" />)}
     <path d={`M ${x + w * 0.38} ${y + h * 0.26} L ${x + w * 0.36} ${y + h * 0.16} L ${x + w * 0.43} ${y + h * 0.21} L ${x + w * 0.5} ${y + h * 0.13} L ${x + w * 0.57} ${y + h * 0.21} L ${x + w * 0.64} ${y + h * 0.16} L ${x + w * 0.62} ${y + h * 0.26} Z`} fill="#f0c24b" />
     {[0.43, 0.5, 0.57].map((k) => <circle key={k} cx={x + w * k} cy={y + h * 0.235} r={w * 0.012} fill="#c0392b" />)}
-    <circle cx={x + w * 0.455} cy={y + h * 0.4} r={w * 0.025} fill="#fbf6ee" />
-    <circle cx={x + w * 0.545} cy={y + h * 0.4} r={w * 0.025} fill="#fbf6ee" />
-    <line x1={x + w * 0.47} y1={y + h * 0.5} x2={x + w * 0.53} y2={y + h * 0.5} stroke="#fbf6ee" strokeWidth={3} />
+    {[0.455, 0.545].map((k) => (
+      <g key={k}>
+        <circle cx={x + w * k} cy={y + h * 0.4} r={w * 0.025} fill="#fbf6ee" />
+        <circle cx={x + w * k} cy={y + h * 0.4} r={w * 0.011} fill="#1d1614" />
+      </g>
+    ))}
+    <line x1={x + w * 0.47} y1={y + h * 0.5} x2={x + w * 0.53} y2={y + h * 0.5} stroke="#3b2620" strokeWidth={3} />
     {name ? (
       <g>
         <rect x={x + w * 0.2} y={y + h + 34} width={w * 0.6} height={46} rx={6} fill="#2a1a10" opacity={0.85} />

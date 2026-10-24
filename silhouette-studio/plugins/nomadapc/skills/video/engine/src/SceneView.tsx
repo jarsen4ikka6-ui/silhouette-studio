@@ -148,14 +148,25 @@ export const SceneView: React.FC<{ scene: Scene }> = ({ scene }) => {
   const look = scene.look === false ? null : scene.look ?? {};
   // фон размывается в координатах сцены, поэтому делим на зум
   const bgBlur = cam.dof / cam.z;
+  const loc = <Loc t={t} params={scene.params ?? {}} />;
+  // кадр-деталь и вид от первого лица: то, на что смотрим (центр кадра), всегда резкое — размываются только края
+  const focus =
+    (cam.shot === "insert" || cam.shot === "pov") && bgBlur > 0.05
+      ? `radial-gradient(ellipse ${(0.5 * W) / cam.z}px ${(0.5 * H) / cam.z}px at ${cam.fx}px ${cam.fy}px, transparent 60%, black 100%)`
+      : undefined;
   const over = cam.shot === "ots" && cam.spec.over ? actors.find((x) => x.a.id === cam.spec.over) : undefined;
 
   return (
     <AbsoluteFill style={{ background: "#000", opacity, overflow: "hidden" }}>
       <div style={{ position: "absolute", width: W, height: H, transformOrigin: "0 0", transform: `translate(${W / 2}px, ${H / 2}px) rotate(${cam.rot}deg) scale(${cam.z}) translate(${-cam.fx}px, ${-cam.fy}px)` }}>
-        <div style={{ position: "absolute", inset: 0, filter: bgBlur > 0.05 ? `blur(${bgBlur}px)` : undefined }}>
-          <Loc t={t} params={scene.params ?? {}} />
-        </div>
+        {focus ? (
+          <>
+            <div style={{ position: "absolute", inset: 0 }}>{loc}</div>
+            <div style={{ position: "absolute", inset: 0, filter: `blur(${bgBlur}px)`, WebkitMaskImage: focus, maskImage: focus }}>{loc}</div>
+          </>
+        ) : (
+          <div style={{ position: "absolute", inset: 0, filter: bgBlur > 0.05 ? `blur(${bgBlur}px)` : undefined }}>{loc}</div>
+        )}
         <svg viewBox={`0 0 ${W} ${H}`} width={W} height={H} style={{ position: "absolute", inset: 0, overflow: "visible" }}>
           {inScene.map((o, i) => <SceneOverlay key={`o${i}`} o={o} t={t} />)}
           {(scene.props ?? []).filter((pr) => !pr.front).map((pr, i) => <PropView key={`b${i}`} prop={pr} t={t} p={p} />)}

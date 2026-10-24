@@ -188,18 +188,4 @@ const save = (name, b, peak = 0.85) => {
   save("dial", fade(b, 0.01, 0.4), 0.45);
 }
 
-// гул толпы: невнятные голоса на фоне (кафе, метро, двор)
-{
-  const b = buf(8.5);
-  const rnd = makeNoise(71);
-  const f1 = svf();
-  const f2 = svf();
-  for (let i = 0; i < b.length; i++) {
-    const t = i / FS;
-    const n = rnd();
-    const m = 0.6 + 0.4 * Math.sin(TAU * 2.3 * t) * Math.sin(TAU * 0.7 * t + 1);
-    b[i] = (f1(n, 500 + Math.sin(TAU * 3.1 * t) * 120, 4).band + f2(n, 1200 + Math.sin(TAU * 1.7 * t) * 300, 5).band * 0.6) * m;
-  }
-  save("crowd", makeLoop(b), 0.45);
-}
 console.log("Звуки готовы");

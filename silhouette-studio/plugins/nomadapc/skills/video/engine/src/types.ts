@@ -7,13 +7,15 @@ export type Legs = "stand" | "walk" | "sit" | "run";
 export type Look = {
   top?: "jacket" | "coat" | "dress" | "robe" | "hoodie" | "tee" | "raincoat" | "none"; // по умолчанию куртка
   color?: string; // цвет одежды — главная примета героя
-  pants?: string; // цвет штанов, по умолчанию чёрные палочки
+  skin?: string; // кожа: light | fair | tan | olive | brown | dark или "#rrggbb"; без неё выбирается сама
+  pants?: string; // цвет штанов (по умолчанию тёмно-синие; у платья и юбки — ноги цвета кожи); "skin" — голые ноги
   shoes?: string;
-  hair?: "none" | "ponytail" | "bun" | "long" | "curls" | "headband" | "scarf"; // curls — кудри (у пожилых белые), scarf — платок
-  hairColor?: string; // цвет волос, повязки или платка
+  trim?: string; // цвет пояса и каймы у накидки (robe)
+  hair?: "short" | "none" | "ponytail" | "bun" | "long" | "curls" | "headband" | "scarf"; // short по умолчанию, none — лысый, curls — кудри (у пожилых седые), scarf — платок
+  hairColor?: string; // цвет волос (у headband/scarf без hatColor — цвет повязки или платка)
   glasses?: boolean;
   hat?: "none" | "cap" | "beanie" | "crown";
-  hatColor?: string;
+  hatColor?: string; // цвет шапки; у headband/scarf — цвет ткани (тогда hairColor — цвет волос)
   skirt?: boolean; // длинная юбка вместо штанов
 };
 
@@ -146,5 +148,6 @@ export type Project = {
   voice?: string; // озвучка диктора из public/, например audio/voice.mp3
   voiceAt?: number; // с какой секунды ролика начинается озвучка
   voiceDb?: number;
+  hero?: Look; // внешность главного героя (из looks.hero) — по ней красятся руки в кадрах от первого лица
   scenes: Scene[];
 };

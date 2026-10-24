@@ -1,10 +1,33 @@
-// Персонаж в стиле Awaken: чёрная голова с белыми глазами и бровями, цветная куртка,
-// тонкие чёрные руки и ноги, тёплая кромка света по краю. Начало координат — между ступнями.
-import React, { useId } from "react";
-import type { Actor, Arms, Legs, Mood } from "./types";
+// Персонаж: круглая голова с кожей, причёской и белыми глазами, цветная одежда,
+// тонкие руки и ноги цвета кожи (ноги в штанах), тёплая кромка света по краю. Начало координат — между ступнями.
+import React, { createContext, useContext, useId } from "react";
+import type { Actor, Arms, Legs, Look, Mood } from "./types";
 import { clamp, lerp, rand } from "./util";
 
-export const BODY = "#0d0d10";
+export const BODY = "#0d0d10"; // тёмный цвет для теней и далёких силуэтов
+
+// Кожа: имя из списка или свой цвет "#rrggbb"
+export const SKINS: Record<string, string> = { light: "#f3d3b5", fair: "#e9b993", tan: "#d29c70", olive: "#c39467", brown: "#a8714a", dark: "#7a4e33" };
+const SKIN_ORDER = ["fair", "tan", "light", "brown", "olive", "dark"];
+const hash = (str: string) => [...str].reduce((h, ch) => (h * 31 + ch.charCodeAt(0)) >>> 0, 7);
+// Кожа персонажа. Если не задана — выбирается по остальной внешности, поэтому один и тот же герой всегда одного цвета
+export const skinOf = (look: Look = {}) => {
+  if (look.skin) return SKINS[look.skin] ?? look.skin;
+  const { skin: _s, ...rest } = look;
+  return SKINS[SKIN_ORDER[hash(JSON.stringify(rest)) % SKIN_ORDER.length]];
+};
+export const HAIR = "#2b1d16";
+// Цвет волос и цвет повязки/платка (у повязки и платка цвет ткани по старой привычке можно задать и hairColor)
+export const hairOf = (look: Look = {}) => {
+  const cloth = look.hair === "headband" || look.hair === "scarf";
+  return {
+    hair: cloth && !look.hatColor ? HAIR : look.hairColor ?? (look.hair === "curls" ? "#e9e4da" : HAIR),
+    band: look.hatColor ?? look.hairColor ?? (look.hair === "scarf" ? "#8e3b46" : "#e8784a"),
+  };
+};
+// Кожа главного героя ролика — ей рисуются руки в кадрах «от первого лица»
+export const HeroSkin = createContext<string>(SKINS.tan);
+export const useHeroSkin = () => useContext(HeroSkin);
 export const HEIGHT = 390; // рост в пикселях при scale 1 (до макушки)
 export const HEAD_R = 46;
 export const HEAD_Y = -HEIGHT + HEAD_R;
@@ -185,6 +208,8 @@ const CUT: Record<string, { bottom: number; flare: number }> = {
   dress: { bottom: -78, flare: 34 },
   robe: { bottom: -8, flare: 36 },
 };
+// Насколько руки отходят от тела в длинной одежде, чтобы висеть по бокам, а не поверх неё (градусы)
+const SPREAD: Record<string, number> = { robe: 15, dress: 15, coat: 7, raincoat: 8 };
 
 export const Character: React.FC<{ actor: Actor; t: number; x: number; y: number }> = ({ actor, t, x, y }) => {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
@@ -192,8 +217,11 @@ export const Character: React.FC<{ actor: Actor; t: number; x: number; y: number
   const look = actor.look ?? {};
   const { pose, face, look: gaze, dir, arms, prevArms, k, mood } = resolve(actor, t);
   const top = look.top ?? "jacket";
-  const cloth = top === "none" ? "#1b1b22" : look.color ?? "#2f9e94";
-  const pants = look.pants ?? BODY;
+  const skin = skinOf(look);
+  const skinD = darken(skin, 0.16);
+  const { hair: hairC, band: bandC } = hairOf(look);
+  const cloth = top === "none" ? skin : look.color ?? "#2f9e94";
+  const pants = look.pants === "skin" ? skin : look.pants ?? (top === "dress" || look.skirt ? skin : "#2c3140");
   const cut = CUT[top] ?? CUT.jacket;
   const rim = actor.rim === "none" || actor.rim === "" ? null : actor.rim ?? DEFAULT_RIM;
   const rimS = actor.rimSide === "right" ? 1 : -1;
@@ -230,8 +258,11 @@ export const Character: React.FC<{ actor: Actor; t: number; x: number; y: number
 
   // руки
   const armsPts = ([-1, 1] as const).map((sd) => {
-    const A = sd < 0 ? pose.la : pose.ra;
-    const sx = side ? sx0 + sd * 6 : sd * (halfTop - 4);
+    const A0 = sd < 0 ? pose.la : pose.ra;
+    // руки, которые висят вдоль тела, в длинной одежде чуть отводим в стороны
+    const sp = !side && Math.abs(A0[0]) < 30 ? (SPREAD[top] ?? 0) + (look.skirt ? 8 : 0) : 0;
+    const A: Limb = [A0[0] + sd * sp, A0[1] + sd * sp * 0.5];
+    const sx = side ? sx0 + sd * 6 : sd * (halfTop - (sp ? 1 : 4));
     const sy = shY + 12;
     const elbow = step(sx, sy, A[0], UPPER_ARM);
     const hand = step(elbow[0], elbow[1], A[1], FOREARM);
@@ -245,45 +276,77 @@ export const Character: React.FC<{ actor: Actor; t: number; x: number; y: number
 
   const tx = sx0;
   const torso = `M ${tx - halfTop + 8} ${shY - 6} Q ${tx} ${shY - 14} ${tx + halfTop - 8} ${shY - 6} Q ${tx + halfTop + 2} ${shY - 3} ${tx + halfTop} ${shY + 16} L ${tx + halfBot} ${bottom - 10} Q ${tx + halfBot} ${bottom} ${tx + halfBot - 10} ${bottom} L ${tx - halfBot + 10} ${bottom} Q ${tx - halfBot} ${bottom} ${tx - halfBot} ${bottom - 10} L ${tx - halfTop} ${shY + 16} Q ${tx - halfTop - 2} ${shY - 3} ${tx - halfTop + 8} ${shY - 6} Z`;
-  const sleeveC = top === "none" ? cloth : darken(cloth, 0.08);
+  const sleeveC = top === "none" ? skin : darken(cloth, 0.08);
   const sleeveLen = top === "tee" ? 0.45 : 1;
 
   // Волосы и шапки — в координатах головы (центр головы = 0,0)
   const back = -(dir || 1); // где затылок
-  const hairColor = look.hairColor ?? (look.hair === "curls" ? "#eeeae2" : BODY);
+  const R = HEAD_R;
+  const hairStyle = look.hair ?? "short";
+  const hasCap = hairStyle !== "none" && hairStyle !== "scarf";
   const HairBack: React.FC<{ c: (v: string) => string }> = ({ c }) => (
     <g transform={`translate(${headX} ${headY})`}>
-      {look.hair === "ponytail" ? <ellipse cx={back * 44} cy={-6} rx={15} ry={27} transform={`rotate(${back * -26} ${back * 44} -6)`} fill={c(hairColor)} /> : null}
-      {look.hair === "bun" ? <circle cx={back * 22 + (dir ? 0 : 20)} cy={-HEAD_R - 2} r={15} fill={c(hairColor)} /> : null}
-      {look.hair === "long" ? <path d={`M ${-HEAD_R} -6 Q ${-HEAD_R - 6} 56 ${-HEAD_R + 10} 66 L ${HEAD_R - 10} 66 Q ${HEAD_R + 6} 56 ${HEAD_R} -6 Z`} fill={c(hairColor)} /> : null}
-      {look.hair === "curls"
+      {hairStyle === "ponytail" ? <ellipse cx={back * 44} cy={-6} rx={15} ry={27} transform={`rotate(${back * -26} ${back * 44} -6)`} fill={c(hairC)} /> : null}
+      {hairStyle === "bun" ? <circle cx={back * 22 + (dir ? 0 : 20)} cy={-R - 2} r={15} fill={c(hairC)} /> : null}
+      {hairStyle === "long" ? <path d={`M ${-R - 2} -6 Q ${-R - 8} 56 ${-R + 8} 68 L ${R - 8} 68 Q ${R + 8} 56 ${R + 2} -6 Z`} fill={c(hairC)} /> : null}
+      {hairStyle === "curls"
         ? Array.from({ length: 11 }, (_, i) => {
             const a = rad(-175 + i * 17);
-            return <circle key={i} cx={Math.cos(a) * (HEAD_R + 1)} cy={Math.sin(a) * (HEAD_R + 1) - 2} r={11 + rand(i) * 3} fill={c(hairColor)} />;
+            return <circle key={i} cx={Math.cos(a) * (R + 1)} cy={Math.sin(a) * (R + 1) - 2} r={11 + rand(i) * 3} fill={c(hairC)} />;
           })
         : null}
-      {top === "hoodie" || top === "raincoat" ? <ellipse cx={back * 8} cy={30} rx={HEAD_R * 0.95} ry={HEAD_R * 0.6} fill={c(darken(cloth, 0.2))} /> : null}
+      {hairStyle === "scarf" && side ? <path d={`M ${back * (R - 6)} 4 Q ${back * (R + 22)} 30 ${back * (R + 12)} 64 L ${back * (R - 8)} 40 Z`} fill={c(darken(bandC, 0.12))} /> : null}
+      {top === "hoodie" || top === "raincoat" ? <ellipse cx={back * 8} cy={30} rx={R * 0.95} ry={R * 0.6} fill={c(darken(cloth, 0.2))} /> : null}
     </g>
   );
+  // уши в анфас — по бокам головы
+  const Ears: React.FC<{ c: (v: string) => string }> = ({ c }) =>
+    side || hairStyle === "scarf" ? null : (
+      <g transform={`translate(${headX} ${headY})`}>
+        {([-1, 1] as const).map((sd) => (
+          <ellipse key={sd} cx={sd * (R + 1)} cy={6} rx={8} ry={10} fill={c(skin)} />
+        ))}
+      </g>
+    );
   const HairFront: React.FC<{ c: (v: string) => string }> = ({ c }) => {
     const hc = look.hatColor ?? "#1d2533";
+    // шапка волос: сверху по форме головы, снизу — линия лба (в профиль волосы уходят к затылку)
+    const cap = side
+      ? `M ${back * Math.sqrt((R + 2) ** 2 - 256)} 16 A ${R + 2} ${R + 2} 0 1 ${dir > 0 ? 1 : 0} ${dir * Math.sqrt((R + 2) ** 2 - 64)} -8 L ${dir * (R - 6)} -18 Q ${dir * 4} -40 ${back * 8} -22 Q ${back * 18} -4 ${back * (R - 14)} 18 Z`
+      : `M ${-Math.sqrt((R + 2) ** 2 - 16)} 4 A ${R + 2} ${R + 2} 0 1 1 ${Math.sqrt((R + 2) ** 2 - 16)} 4 L ${R - 3} 2 Q ${R - 8} -26 0 -26 Q ${-R + 8} -26 ${-R + 3} 2 Z`;
+    const fo = dir * 12; // лицо в профиль смещено вперёд
     return (
       <g transform={`translate(${headX} ${headY})`}>
-        {look.hair === "headband" ? <path d={`M ${-HEAD_R + 3} -19 Q 0 -34 ${HEAD_R - 3} -19 L ${HEAD_R - 1} -10 Q 0 -25 ${-HEAD_R + 1} -10 Z`} fill={c(look.hairColor ?? "#e8e8e8")} /> : null}
-        {look.hair === "scarf" ? (
-          <path d={`M ${-HEAD_R - 4} 12 A ${HEAD_R + 4} ${HEAD_R + 4} 0 0 1 ${HEAD_R + 4} 12 L ${HEAD_R - 6} 18 Q 0 -40 ${-HEAD_R + 6} 18 Z`} fill={c(look.hairColor ?? "#8e3b46")} />
+        {side && hairStyle !== "scarf" ? <ellipse cx={back * 8} cy={6} rx={7} ry={9.5} fill={c(skinD)} /> : null}
+        {hasCap ? <path d={cap} fill={c(hairC)} /> : null}
+        {hairStyle === "headband" ? <path d={`M ${-R + 1} -17 Q 0 -32 ${R - 1} -17 L ${R} -7 Q 0 -22 ${-R} -7 Z`} fill={c(bandC)} /> : null}
+        {hairStyle === "scarf" ? (
+          // платок: закрывает волосы и уши, открыто только лицо
+          <path d={`M ${-Math.sqrt((R + 5) ** 2 - 400)} 20 A ${R + 5} ${R + 5} 0 1 1 ${Math.sqrt((R + 5) ** 2 - 400)} 20 L ${fo + 30} 26 Q ${fo + 36} -32 ${fo} -32 Q ${fo - 36} -32 ${fo - 30} 26 Z`} fill={c(bandC)} />
         ) : null}
         {look.hat === "cap" ? (
           <g>
-            <path d={`M ${-HEAD_R - 1} -8 A ${HEAD_R + 1} ${HEAD_R + 1} 0 0 1 ${HEAD_R + 1} -8 Z`} fill={c(hc)} />
-            <path d={`M ${-HEAD_R} -8 Q 0 -18 ${HEAD_R} -8`} fill="none" stroke={c(darken(hc, 0.25))} strokeWidth={3} />
-            <rect x={(dir || 1) > 0 ? HEAD_R - 14 : -HEAD_R - 26} y={-11} width={40} height={8} rx={4} fill={c(darken(hc, 0.12))} />
+            <path d={`M ${-R - 1} -8 A ${R + 1} ${R + 1} 0 0 1 ${R + 1} -8 Z`} fill={c(hc)} />
+            <path d={`M ${-R} -8 Q 0 -18 ${R} -8`} fill="none" stroke={c(darken(hc, 0.25))} strokeWidth={3} />
+            <rect x={(dir || 1) > 0 ? R - 14 : -R - 26} y={-11} width={40} height={8} rx={4} fill={c(darken(hc, 0.12))} />
           </g>
         ) : null}
         {look.hat === "crown" ? (
-          <path d={`M -30 ${-HEAD_R + 6} L -34 ${-HEAD_R - 26} L -17 ${-HEAD_R - 10} L 0 ${-HEAD_R - 32} L 17 ${-HEAD_R - 10} L 34 ${-HEAD_R - 26} L 30 ${-HEAD_R + 6} Z`} fill={c(look.hatColor ?? "#f1c24b")} />
+          <path d={`M -30 ${-R + 6} L -34 ${-R - 26} L -17 ${-R - 10} L 0 ${-R - 32} L 17 ${-R - 10} L 34 ${-R - 26} L 30 ${-R + 6} Z`} fill={c(look.hatColor ?? "#f1c24b")} />
         ) : null}
-        {look.hat === "beanie" ? <path d={`M ${-HEAD_R - 2} -4 A ${HEAD_R + 2} ${HEAD_R + 4} 0 0 1 ${HEAD_R + 2} -4 Z`} fill={c(hc)} /> : null}
+        {look.hat === "beanie" ? <path d={`M ${-R - 2} -4 A ${R + 2} ${R + 4} 0 0 1 ${R + 2} -4 Z`} fill={c(hc)} /> : null}
+      </g>
+    );
+  };
+
+  const ArmView: React.FC<{ a: (typeof armsPts)[number]; c: (v: string) => string }> = ({ a, c }) => {
+    const mid: [number, number] = [lerp(a.sh[0], a.elbow[0], sleeveLen), lerp(a.sh[1], a.elbow[1], sleeveLen)];
+    return (
+      <g>
+        <polyline points={`${a.elbow[0]},${a.elbow[1]} ${a.hand[0]},${a.hand[1]}`} fill="none" stroke={c(skin)} strokeWidth={LIMB} strokeLinecap="round" />
+        {sleeveLen < 1 ? <line x1={mid[0]} y1={mid[1]} x2={a.elbow[0]} y2={a.elbow[1]} stroke={c(skin)} strokeWidth={LIMB} strokeLinecap="round" /> : null}
+        <line x1={a.sh[0]} y1={a.sh[1]} x2={mid[0]} y2={mid[1]} stroke={c(sleeveC)} strokeWidth={top === "none" ? LIMB + 2 : 19} strokeLinecap="round" />
+        <circle cx={a.hand[0]} cy={a.hand[1]} r={7.5} fill={c(skin)} />
       </g>
     );
   };
@@ -294,10 +357,12 @@ export const Character: React.FC<{ actor: Actor; t: number; x: number; y: number
     return (
       <g>
         <HairBack c={c} />
+        {/* в профиль дальняя рука за телом — видна только ближняя */}
+        {side ? <ArmView a={armsPts[0]} c={c} /> : null}
         {legs.map((l, i) => (
           <g key={`l${i}`}>
-            <polyline points={`${l.hip[0]},${l.hip[1]} ${l.knee[0]},${l.knee[1]} ${l.foot[0]},${l.foot[1]}`} fill="none" stroke={c(pants)} strokeWidth={pants === BODY ? LIMB : LIMB + 3} strokeLinecap="round" strokeLinejoin="round" />
-            <ellipse cx={l.foot[0] + (dir || (i ? 1 : -1)) * 6} cy={l.foot[1] - 3} rx={12} ry={6.5} fill={c(look.shoes ?? BODY)} />
+            <polyline points={`${l.hip[0]},${l.hip[1]} ${l.knee[0]},${l.knee[1]} ${l.foot[0]},${l.foot[1]}`} fill="none" stroke={c(pants)} strokeWidth={pants === skin ? LIMB : LIMB + 3} strokeLinecap="round" strokeLinejoin="round" />
+            <ellipse cx={l.foot[0] + (dir || (i ? 1 : -1)) * 6} cy={l.foot[1] - 3} rx={12} ry={6.5} fill={c(look.shoes ?? "#2a2320")} />
           </g>
         ))}
         <path d={torso} fill={mono ?? `url(#cl${uid})`} />
@@ -306,9 +371,10 @@ export const Character: React.FC<{ actor: Actor; t: number; x: number; y: number
             {/* воротник и застёжка */}
             <path d={`M ${tx - 10} ${shY - 9} L ${tx} ${shY + 12} L ${tx + 10} ${shY - 9}`} fill="none" stroke={lighten(cloth, 0.35)} strokeWidth={3} strokeLinejoin="round" opacity={0.8} />
             {top === "robe" ? (
+              // накидка: пояс на талии и светлая кайма по низу (цвет — trim)
               <g>
-                <rect x={tx - 5} y={shY + 10} width={10} height={bottom - shY - 10} fill="#f5efe4" />
-                <path d={`M ${tx - halfTop - 4} ${shY + 2} Q ${tx} ${shY + 26} ${tx + halfTop + 4} ${shY + 2}`} fill="none" stroke="#f5efe4" strokeWidth={10} strokeLinecap="round" />
+                <path d={`M ${tx - halfTop - 6} ${hipY + 8} Q ${tx} ${hipY + 16} ${tx + halfTop + 6} ${hipY + 8}`} fill="none" stroke={look.trim ?? darken(cloth, 0.3)} strokeWidth={9} strokeLinecap="round" />
+                <path d={`M ${tx - halfBot + 4} ${bottom - 12} L ${tx + halfBot - 4} ${bottom - 12}`} stroke={look.trim ? lighten(look.trim, 0.1) : lighten(cloth, 0.28)} strokeWidth={6} />
               </g>
             ) : side ? (
               <line x1={tx + dir * (halfTop - 7)} y1={shY + 14} x2={tx + dir * (halfBot - 8)} y2={bottom - 6} stroke={darken(cloth, 0.2)} strokeWidth={2} opacity={0.6} />
@@ -317,19 +383,10 @@ export const Character: React.FC<{ actor: Actor; t: number; x: number; y: number
             )}
           </g>
         ) : null}
-        <circle cx={headX} cy={headY} r={HEAD_R} fill={c(BODY)} />
+        <Ears c={c} />
+        <circle cx={headX} cy={headY} r={HEAD_R} fill={c(skin)} />
         <HairFront c={c} />
-        {armsPts.map((a, i) => {
-          const mid: [number, number] = [lerp(a.sh[0], a.elbow[0], sleeveLen), lerp(a.sh[1], a.elbow[1], sleeveLen)];
-          return (
-            <g key={`a${i}`}>
-              <polyline points={`${a.elbow[0]},${a.elbow[1]} ${a.hand[0]},${a.hand[1]}`} fill="none" stroke={c(BODY)} strokeWidth={LIMB} strokeLinecap="round" />
-              {sleeveLen < 1 ? <line x1={mid[0]} y1={mid[1]} x2={a.elbow[0]} y2={a.elbow[1]} stroke={c(BODY)} strokeWidth={LIMB} strokeLinecap="round" /> : null}
-              <line x1={a.sh[0]} y1={a.sh[1]} x2={mid[0]} y2={mid[1]} stroke={c(sleeveC)} strokeWidth={top === "none" ? LIMB + 2 : 19} strokeLinecap="round" />
-              <circle cx={a.hand[0]} cy={a.hand[1]} r={7.5} fill={c(BODY)} />
-            </g>
-          );
-        })}
+        {(side ? armsPts.slice(1) : armsPts).map((a, i) => <ArmView key={`a${i}`} a={a} c={c} />)}
       </g>
     );
   };
@@ -343,7 +400,9 @@ export const Character: React.FC<{ actor: Actor; t: number; x: number; y: number
   const ery = 10.5 * face.size;
   const lid = clamp(face.lid + bl * (1 - face.lid));
   const closed = lid > 0.92;
-  const glassC = "#d8dde4";
+  const glassC = "#3a3f4a";
+  const INK = "#3b2620"; // рот и закрытые глаза
+  const browC = darken(hasCap ? hairC : HAIR, 0.1);
 
   return (
     <g transform={`translate(${x} ${y}) scale(${s})`}>
@@ -388,28 +447,29 @@ export const Character: React.FC<{ actor: Actor; t: number; x: number; y: number
         return (
           <g key={sd}>
             {closed ? (
-              <path d={`M ${cx - erx} ${fy + 1} Q ${cx} ${fy + 6} ${cx + erx} ${fy + 1}`} fill="none" stroke="#f4f1ea" strokeWidth={2.6} strokeLinecap="round" />
+              <path d={`M ${cx - erx} ${fy + 1} Q ${cx} ${fy + 6} ${cx + erx} ${fy + 1}`} fill="none" stroke={INK} strokeWidth={2.6} strokeLinecap="round" />
             ) : (
               <g>
                 <clipPath id={cid}>
                   <ellipse cx={cx} cy={fy} rx={erx} ry={ery} />
                 </clipPath>
                 <g clipPath={`url(#${cid})`}>
-                  <ellipse cx={cx} cy={fy} rx={erx} ry={ery} fill="#f4f1ea" />
-                  <circle cx={cx + gaze.x * 3.6} cy={fy + 1 + gaze.y * 4} r={4.9 * Math.min(1.1, face.size)} fill="#111216" />
-                  <rect x={cx - 14} y={fy - ery - 20} width={28} height={20 + 2 * ery * lid} fill={BODY} />
+                  <ellipse cx={cx} cy={fy} rx={erx} ry={ery} fill="#fbf8f2" />
+                  <circle cx={cx + gaze.x * 3.6} cy={fy + 1 + gaze.y * 4} r={4.9 * Math.min(1.1, face.size)} fill="#1d1614" />
+                  <rect x={cx - 14} y={fy - ery - 20} width={28} height={20 + 2 * ery * lid} fill={skinD} />
                 </g>
+                <ellipse cx={cx} cy={fy} rx={erx} ry={ery} fill="none" stroke={darken(skin, 0.35)} strokeWidth={1.2} opacity={0.6} />
               </g>
             )}
             {/* бровь: внутренний конец (к носу) поднимается при грусти и опускается при злости */}
-            {look.hat === "cap" ? null : <line x1={cx + sd * 6.5} y1={by} x2={cx - sd * 6.5} y2={by - tiltY} stroke="#f4f1ea" strokeWidth={2.6} strokeLinecap="round" />}
+            {look.hat === "cap" ? null : <line x1={cx + sd * 6.5} y1={by} x2={cx - sd * 6.5} y2={by - tiltY} stroke={browC} strokeWidth={3} strokeLinecap="round" />}
           </g>
         );
       })}
       {face.o > 0.5 ? (
-        <ellipse cx={fx} cy={fy + 22} rx={3.6} ry={4.6} fill="#f4f1ea" />
+        <ellipse cx={fx} cy={fy + 22} rx={3.6} ry={4.6} fill={INK} />
       ) : (
-        <path d={`M ${fx - 5.5} ${fy + 21} Q ${fx} ${fy + 21 + face.smile * 4.5} ${fx + 5.5} ${fy + 21}`} fill="none" stroke="#f4f1ea" strokeWidth={2.4} strokeLinecap="round" />
+        <path d={`M ${fx - 5.5} ${fy + 21} Q ${fx} ${fy + 21 + face.smile * 4.5} ${fx + 5.5} ${fy + 21}`} fill="none" stroke={INK} strokeWidth={2.4} strokeLinecap="round" />
       )}
       {mood === "sleep"
         ? [0, 1, 2].map((i) => {

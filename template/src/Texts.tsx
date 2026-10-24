@@ -42,6 +42,14 @@ export const SpeechText: React.FC<{ item: SceneText; t: number; x: number; y: nu
   );
 };
 
+// сколько крутится число: не дольше, чем табличка висит на экране — до нужной цифры доходит всегда
+// (в конце ≥ 0.6 c держим готовую цифру, потом 0.4 c затухание)
+export const runTime = (o: Overlay, delay: number, def: number) => {
+  const time = (o as { time?: number }).time ?? def;
+  if (o.dur === undefined) return time;
+  return Math.max(0.3, Math.min(time, o.dur - delay - 1));
+};
+
 export const OverlayView: React.FC<{ o: Overlay; t: number }> = ({ o, t }) => {
   const op = fadeWindow(t, o.at ?? 0, o.dur ?? Infinity, 0.4, 0.4);
   if (op <= 0) return null;
@@ -55,7 +63,7 @@ export const OverlayView: React.FC<{ o: Overlay; t: number }> = ({ o, t }) => {
   }
   if (o.kind === "counter") {
     // число, которое накручивается (или таймер, который идёт вниз)
-    const k = ease(clamp((t - (o.at ?? 0) - 0.2) / (o.time ?? 2)));
+    const k = ease(clamp((t - (o.at ?? 0) - 0.2) / runTime(o, 0.2, 2)));
     const v = o.from + (o.to - o.from) * k;
     const txt = o.format === "mmss" ? `${Math.floor(Math.max(0, v) / 60)}:${String(Math.floor(Math.max(0, v) % 60)).padStart(2, "0")}` : Math.round(v).toLocaleString("ru-RU");
     return (
@@ -73,7 +81,7 @@ export const OverlayView: React.FC<{ o: Overlay; t: number }> = ({ o, t }) => {
     return (
       <div style={{ position: "absolute", left: o.x ?? (1920 - W0 - 260) / 2, top: o.y ?? 110, opacity: op, padding: "34px 40px", borderRadius: 26, background: "rgba(8,10,16,0.72)" }}>
         {o.items.map((it, i) => {
-          const k = ease(clamp((t - (o.at ?? 0) - 0.3 - i * 0.35) / 1.4));
+          const k = ease(clamp((t - (o.at ?? 0) - 0.3 - i * 0.35) / Math.max(0.3, Math.min(1.4, (o.dur ?? Infinity) - 1.3 - i * 0.35))));
           const color = it.color ?? "#f2c66d";
           return (
             <div key={i} style={{ display: "flex", alignItems: "center", gap: 24, marginTop: i ? 26 : 0 }}>
@@ -107,7 +115,7 @@ export const OverlayView: React.FC<{ o: Overlay; t: number }> = ({ o, t }) => {
     );
   }
   if (o.kind === "meter") {
-    const k = ease(clamp((t - (o.at ?? 0) - 0.4) / 1.8));
+    const k = ease(clamp((t - (o.at ?? 0) - 0.4) / runTime(o, 0.4, 1.8)));
     const v = o.from + (o.to - o.from) * k;
     const H = 360;
     const color = o.color ?? (v < 30 ? "#e8574a" : v < 60 ? "#f2c66d" : "#6fd38a");
@@ -175,7 +183,7 @@ const AwakenOverlay: React.FC<{ o: Overlay; t: number; op: number }> = ({ o, t, 
     );
   }
   if (o.kind === "stat") {
-    const k = ease(clamp((t - at - 0.25) / (o.time ?? 1.6)));
+    const k = ease(clamp((t - at - 0.25) / runTime(o, 0.25, 1.6)));
     const v = Math.round(o.from + (o.to - o.from) * k);
     return (
       <div style={{ position: "absolute", left: o.x ?? 78, top: o.y ?? 66, opacity: op, transform: `scale(${pop(t, at)})`, transformOrigin: "0 0" }}>

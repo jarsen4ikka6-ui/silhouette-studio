@@ -94,10 +94,28 @@ const scenes = board.scenes.map((s, i) => {
   return { ...resolve(rest, start, `сцена ${i + 1}`), dur };
 });
 
+// 3. табличка с числом должна успеть докрутиться до цифры и повисеть: короткий dur продлеваем сами
+// (задержка + накрутка + 1.2 c с готовой цифрой + 0.4 c затухание), но не дальше конца сцены
+const ROLL = { stat: [0.25, 1.6], counter: [0.2, 2], meter: [0.4, 1.8], bars: [0.3, 1.4] };
+const warns = [];
+for (const [i, s] of scenes.entries())
+  for (const o of s.overlays ?? []) {
+    if (o.dur === undefined) continue;
+    const at = o.at ?? 0;
+    const roll = ROLL[o.kind];
+    if (roll) {
+      const run = (o.time ?? roll[1]) + (o.kind === "bars" ? 0.35 * ((o.items?.length ?? 1) - 1) : 0);
+      const need = roll[0] + run + 1.6;
+      if (o.dur < need) o.dur = Math.round(Math.min(need, s.dur - at) * 100) / 100;
+      if (o.dur < need) warns.push(`Сцена ${i + 1}: «${o.kind}» висит только ${o.dur} c, число крутится быстрее. Лучше начать его раньше или продлить сцену`);
+    } else if (o.dur < 1.2) warns.push(`Сцена ${i + 1}: «${o.kind}» видно всего ${o.dur} c — зритель не успеет прочитать`);
+  }
+
 const music = (board.music ?? []).map((m) => ({ ...m, from: typeof m.from === "string" ? find(m.from.replace(/^@/, ""), 0, "music").start - 1 : m.from }));
 const { scenes: _x, lead: _l, tail: _t, looks: _lk, ...head } = board;
 mkdirSync("data", { recursive: true });
-writeFileSync(`data/${name}.json`, JSON.stringify({ fps: 30, width: 1920, height: 1080, ...head, music, scenes }, null, 2));
+const hero = looks.hero ?? Object.values(looks)[0];
+writeFileSync(`data/${name}.json`, JSON.stringify({ fps: 30, width: 1920, height: 1080, ...head, ...(hero ? { hero } : {}), music, scenes }, null, 2));
 
 let acc = 0;
 for (const [i, s] of scenes.entries()) {
@@ -105,6 +123,7 @@ for (const [i, s] of scenes.entries()) {
   console.log(`${String(i + 1).padStart(2)}  ${m}:${(acc % 60).toFixed(1).padStart(4, "0")}  ${s.dur.toFixed(1).padStart(5)} c  ${s.card ? "[карточка]" : s.location}  ${s.note ?? ""}`);
   acc += s.dur;
 }
+for (const w of warns) console.log(`ВНИМАНИЕ: ${w}`);
 console.log(`Готово: ${scenes.length} сцен, ${Math.floor(total / 60)}:${String(Math.round(total % 60)).padStart(2, "0")} -> data/${name}.json`);
 
 // музыка под этот ролик (если не свой трек)

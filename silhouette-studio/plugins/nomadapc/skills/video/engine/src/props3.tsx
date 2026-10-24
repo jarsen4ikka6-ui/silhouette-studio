@@ -1,7 +1,7 @@
 // Предметы в стиле Awaken (к новым локациям). Точка (x, y) — место на полу, как в props.tsx.
 // longtable, cafetable, rockchair, potplant, streetlamp, bed, crib, car, ship, bird, bunting, holo, genes, desk, candle
 import React, { useId } from "react";
-import { BODY } from "./Character";
+import { HAIR, SKINS } from "./Character";
 import { INTER } from "./fonts";
 import { Glow, PotPlant } from "./locations3";
 import { clamp, rand } from "./util";
@@ -267,11 +267,12 @@ const Sign: React.FC<PP> = ({ params }) => (
   </g>
 );
 
-// Тень сидящего зрителя на переднем плане (силуэт со спины)
-const Back: React.FC<PP> = () => (
-  <g fill={BODY}>
-    <circle cx={0} cy={-250} r={60} />
-    <path d="M -110 0 Q -110 -180 0 -190 Q 110 -180 110 0 Z" />
+// Зритель на переднем плане, со спины. params: color (одежда), skin, hairColor
+const Back: React.FC<PP> = ({ params }) => (
+  <g>
+    <circle cx={0} cy={-250} r={60} fill={SKINS[str(params.skin, "tan")] ?? str(params.skin, SKINS.tan)} />
+    <path d="M -61 -236 A 61 61 0 1 1 61 -236 Q 0 -212 -61 -236 Z" fill={str(params.hairColor, HAIR)} />
+    <path d="M -110 0 Q -110 -180 0 -190 Q 110 -180 110 0 Z" fill={str(params.color, "#2c3140")} />
   </g>
 );
 
