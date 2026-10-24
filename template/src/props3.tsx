@@ -112,17 +112,20 @@ const Crib: React.FC<PP> = () => (
   </g>
 );
 
-// Машина сбоку. params: color, drive (скорость px/с — едет вправо)
+// Машина сбоку. params: color, drive (скорость px/с: плюс — вправо, минус — влево, машина сама разворачивается)
 const Car: React.FC<PP> = ({ t, params }) => {
   const c = str(params.color, "#d9574a");
   const dx = num(params.drive, 0) * t;
-  const wr = t * num(params.drive, 0) * 0.02;
+  const wr = t * Math.abs(num(params.drive, 0)) * 0.02;
   return (
-    <g transform={`translate(${dx} 0)`}>
-      <path d="M -220 -40 L -220 -110 Q -210 -130 -170 -134 L -110 -138 L -60 -200 Q -50 -210 -30 -210 L 100 -210 Q 120 -210 134 -196 L 180 -140 Q 220 -134 226 -110 L 226 -40 Z" fill={c} />
-      <path d="M -88 -142 L -46 -192 L 30 -192 L 30 -142 Z" fill="#cfe0f2" />
-      <path d="M 46 -142 L 46 -192 L 104 -192 Q 112 -192 120 -184 L 156 -142 Z" fill="#cfe0f2" />
-      <rect x={210} y={-104} width={18} height={14} rx={4} fill="#fff1c0" />
+    // капот, пологое лобовое стекло и фара СПРАВА: машина смотрит вправо. При drive < 0 (едет влево) движок её разворачивает
+    // (dx при этом считается в развёрнутых координатах, поэтому берём модуль)
+    <g transform={`translate(${params._flip ? -dx : dx} 0)`}>
+      <path d="M 226 -40 L 226 -104 Q 222 -128 180 -134 L 110 -140 L 50 -200 Q 40 -210 20 -210 L -100 -210 Q -120 -210 -132 -196 L -170 -140 Q -214 -134 -220 -110 L -220 -40 Z" fill={c} />
+      <path d="M 88 -144 L 40 -192 L -30 -192 L -30 -144 Z" fill="#cfe0f2" />
+      <path d="M -46 -144 L -46 -192 L -100 -192 Q -110 -192 -116 -184 L -150 -144 Z" fill="#cfe0f2" />
+      <rect x={208} y={-100} width={18} height={14} rx={4} fill="#fff1c0" />
+      <rect x={-222} y={-100} width={10} height={16} rx={3} fill="#c0392b" />
       {[-130, 130].map((x) => (
         <g key={x} transform={`translate(${x} -40) rotate(${wr * 57})`}>
           <circle r={42} fill="#1d1d24" />

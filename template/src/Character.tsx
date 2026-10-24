@@ -42,10 +42,10 @@ const SHIN = 84;
 const LIMB = 9; // толщина рук и ног
 const DEFAULT_RIM = "#f6a95c";
 
-type Limb = [number, number]; // углы плеча и предплечья (бедра и голени), градусы от «вниз», + вправо
-type PoseA = { la: Limb; ra: Limb; ll: Limb; rl: Limb; bob: number; tilt: number; sit: number };
+export type Limb = [number, number]; // углы плеча и предплечья (бедра и голени), градусы от «вниз», + вправо
+export type PoseA = { la: Limb; ra: Limb; ll: Limb; rl: Limb; bob: number; tilt: number; sit: number };
 // лицо: веко сверху (0..1), подъём бровей, наклон бровей (+ домиком), улыбка (+ вверх, − грусть), рот «о», размер глаз
-type Face = { lid: number; brow: number; browTilt: number; smile: number; o: number; size: number };
+export type Face = { lid: number; brow: number; browTilt: number; smile: number; o: number; size: number };
 
 const armPose = (a: Arms, t: number): Pick<PoseA, "la" | "ra"> => {
   const b = Math.sin(t * 1.7) * 1.6;
@@ -55,7 +55,8 @@ const armPose = (a: Arms, t: number): Pick<PoseA, "la" | "ra"> => {
     case "mug":
       return { la: [-7 - b, -4], ra: [20, -125 + b] };
     case "reach":
-      return { la: [-62, -84], ra: [7 + b, 4] };
+      // тянется вперёд (к кассе, к ящику, к другому человеку) — ближней рукой, чуть ниже, чем «point»
+      return { la: [-7 - b, -4], ra: [64, 86] };
     case "cheer": {
       const w = Math.sin(t * 9) * 7;
       return { la: [-122 + w, -152 + w], ra: [122 - w, 152 - w] };
@@ -130,8 +131,8 @@ const FACES: Record<Mood, Face> = {
 
 const MOOD_HEAD: Record<Mood, number> = { neutral: 0, tired: 5, sad: 7, worried: 2, happy: -2, angry: -2, surprised: -3, smug: -1, sleep: 8 };
 
-const rad = (d: number) => (d * Math.PI) / 180;
-const step = (x: number, y: number, ang: number, len: number): [number, number] => [x + Math.sin(rad(ang)) * len, y + Math.cos(rad(ang)) * len];
+export const rad = (d: number) => (d * Math.PI) / 180;
+export const step = (x: number, y: number, ang: number, len: number): [number, number] => [x + Math.sin(rad(ang)) * len, y + Math.cos(rad(ang)) * len];
 const mixLimb = (a: Limb, b: Limb, k: number): Limb => [lerp(a[0], b[0], k), lerp(a[1], b[1], k)];
 
 const rgb = (hex: string) => {
@@ -151,7 +152,7 @@ export const lighten = (hex: string, k: number) => {
 };
 
 // Поза в момент t с плавным переходом между ключами
-const resolve = (actor: Actor, t: number) => {
+export const poseAt = (actor: Actor, t: number) => {
   const dirOf = (f?: string) => (f === "left" ? -1 : f === "right" ? 1 : 0);
   const base = { at: 0, arms: actor.arms ?? "rest", legs: actor.legs ?? "stand", mood: actor.mood ?? "neutral", lookX: actor.lookX ?? dirOf(actor.facing) * 0.6, lookY: actor.lookY ?? 0, facing: actor.facing ?? "front" };
   const keys = [base, ...(actor.keys ?? [])];
@@ -166,8 +167,9 @@ const resolve = (actor: Actor, t: number) => {
   const kk = k * k * (3 - 2 * k);
 
   const dir = dirOf(cur.facing);
-  // в профиль влево руки зеркалятся, чтобы жесты (указать, помахать) шли вперёд
-  const mirror = (a: Pick<PoseA, "la" | "ra">) => ({ la: [-a.ra[0], -a.ra[1]] as Limb, ra: [-a.la[0], -a.la[1]] as Limb });
+  // в профиль влево углы рук зеркалятся, чтобы жесты (указать, тянуться, кружка) шли вперёд.
+  // Руки не меняются местами: ra всегда ближняя к зрителю рука, ею делается жест и в ней предмет
+  const mirror = (a: Pick<PoseA, "la" | "ra">) => ({ la: [-a.la[0], -a.la[1]] as Limb, ra: [-a.ra[0], -a.ra[1]] as Limb });
   const pa = (x: typeof base) => {
     const arm = armPose(x.arms, t);
     return { ...(dirOf(x.facing) < 0 ? mirror(arm) : arm), ...legPose(x.legs, t, dirOf(x.facing)) };
@@ -191,14 +193,14 @@ const resolve = (actor: Actor, t: number) => {
 };
 
 // Моргание: раз в 3–4 секунды на 4 кадра
-const blink = (t: number, seed: number) => {
+export const blink = (t: number, seed: number) => {
   const period = 3.4 + rand(seed) * 1.2;
   const ph = (t + rand(seed + 7) * period) % period;
   return ph < 0.13 ? Math.sin((ph / 0.13) * Math.PI) : 0;
 };
 
 // Длина одежды: где кончается низ (y) и насколько расширяется книзу
-const CUT: Record<string, { bottom: number; flare: number }> = {
+export const CUT: Record<string, { bottom: number; flare: number }> = {
   jacket: { bottom: -158, flare: 4 },
   hoodie: { bottom: -160, flare: 3 },
   tee: { bottom: -168, flare: 2 },
@@ -209,13 +211,13 @@ const CUT: Record<string, { bottom: number; flare: number }> = {
   robe: { bottom: -8, flare: 36 },
 };
 // Насколько руки отходят от тела в длинной одежде, чтобы висеть по бокам, а не поверх неё (градусы)
-const SPREAD: Record<string, number> = { robe: 15, dress: 15, coat: 7, raincoat: 8 };
+export const SPREAD: Record<string, number> = { robe: 15, dress: 15, coat: 7, raincoat: 8 };
 
 export const Character: React.FC<{ actor: Actor; t: number; x: number; y: number }> = ({ actor, t, x, y }) => {
   const uid = useId().replace(/[^a-zA-Z0-9]/g, "");
   const s = actor.scale ?? 1;
   const look = actor.look ?? {};
-  const { pose, face, look: gaze, dir, arms, prevArms, k, mood } = resolve(actor, t);
+  const { pose, face, look: gaze, dir, arms, prevArms, k, mood } = poseAt(actor, t);
   const top = look.top ?? "jacket";
   const skin = skinOf(look);
   const skinD = darken(skin, 0.16);

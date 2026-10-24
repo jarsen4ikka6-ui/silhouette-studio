@@ -11,3 +11,10 @@ topics-history.md
 *.mp4
 *.mp3
 *.wav
+
+# тестовые доски и сценарии — только для проверки
+template/boards/style-test*.json
+template/boards/toon-test.json
+template/boards/toon-look.json
+template/script/toon-test.md
+template/characters/

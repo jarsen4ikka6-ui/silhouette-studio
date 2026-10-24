@@ -18,7 +18,8 @@ const NODE_MIN = [22, 18]; // с 22.18 Node сам запускает .mts (ск
 // Что в студии принадлежит плагину (обновляется) — всё остальное принадлежит человеку
 const ENGINE_FILES = ["src", "scripts", "docs", "package.json", "package-lock.json", "tsconfig.json", "remotion.config.ts", "boards/demo.json"];
 const KEEP_ON_UPDATE = [path.join("src", "custom")];
-const USER_DIRS = ["boards", "data", "transcripts", "voice", "script", "out", path.join("public", "audio"), path.join("public", "music")];
+// characters/ — свои персонажи человека (внешность + присланные картинки), живут между роликами
+const USER_DIRS = ["boards", "data", "transcripts", "voice", "script", "out", "characters", path.join("public", "audio"), path.join("public", "music")];
 
 const say = (s) => console.log(s);
 const fail = (s) => {
@@ -57,7 +58,11 @@ const copyEngine = (dir, { update }) => {
         if (!KEEP_ON_UPDATE.includes(path.join("src", name))) rmSync(path.join(dst, name), { recursive: true, force: true });
       }
       for (const name of readdirSync(src)) {
-        if (KEEP_ON_UPDATE.includes(path.join("src", name)) && existsSync(path.join(dst, name))) continue;
+        if (KEEP_ON_UPDATE.includes(path.join("src", name)) && existsSync(path.join(dst, name))) {
+          // свои файлы человека не трогаем, но новые файлы-заготовки из плагина докладываем (например characters.tsx)
+          for (const f2 of readdirSync(path.join(src, name))) if (!existsSync(path.join(dst, name, f2))) cpSync(path.join(src, name, f2), path.join(dst, name, f2), { recursive: true });
+          continue;
+        }
         cpSync(path.join(src, name), path.join(dst, name), { recursive: true });
       }
       continue;

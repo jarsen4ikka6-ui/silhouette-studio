@@ -33,6 +33,7 @@ const style = readFileSync(path.join(ROOT, "style-guide.md"), "utf8")
   .replace(/^- \*\*Фоны — самая трудоёмкая часть\.\*\*.*$/m, "- **Фоны — самая трудоёмкая часть.** Каждая новая локация рисуется кодом в src/custom (engine.md, раздел 9).");
 writeFileSync(path.join(REFS, "style-guide.md"), style);
 cpSync(path.join(ROOT, "ideas-playbook.md"), path.join(REFS, "ideas-playbook.md"));
+cpSync(path.join(ROOT, "script-prompt.md"), path.join(REFS, "script-prompt.md")); // мастер-промпт мультика «Что, если бы ты…»
 const board = JSON.parse(readFileSync(path.join(TEMPLATE, "boards", "01-bez-telefonov.json"), "utf8"));
 delete board.voice;
 delete board.id; // id = имя файла доски

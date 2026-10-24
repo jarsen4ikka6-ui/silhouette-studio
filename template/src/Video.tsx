@@ -3,6 +3,8 @@ import { Audio } from "@remotion/media";
 import React, { useMemo } from "react";
 import { AbsoluteFill, Sequence, staticFile, useVideoConfig } from "remotion";
 import { HeroSkin, skinOf } from "./Character";
+import { Film } from "./film";
+import { toonSkin } from "./Toon";
 import { SceneView } from "./SceneView";
 import type { Project, Sfx } from "./types";
 import { dbToGain } from "./util";
@@ -20,6 +22,8 @@ export const timeline = (project: Project) => {
     return { scene: s, start, end: acc };
   });
 };
+
+export const filmOf = (project: Project) => ({ style: project.style ?? "silhouette", env: project.voiceEnv, voiceAt: project.voiceAt ?? 0, hud: project.hud });
 
 export const totalDuration = (project: Project) => project.scenes.reduce((a, s) => a + s.dur, 0);
 
@@ -53,14 +57,15 @@ export const FilmVideo: React.FC<{ project: Project }> = ({ project }) => {
   const parts = project.music ?? [];
 
   return (
-    <HeroSkin.Provider value={skinOf(project.hero)}>
+    <Film.Provider value={filmOf(project)}>
+    <HeroSkin.Provider value={project.style === "toon" ? toonSkin(project.hero) : skinOf(project.hero)}>
     <AbsoluteFill style={{ background: "#000" }}>
       {tl.map(({ scene, start, end }, i) => {
         const from = Math.round(start * fps);
         const dur = Math.max(1, Math.round(end * fps) - from);
         return (
           <Sequence key={i} from={from} durationInFrames={dur} premountFor={Math.round(fps * 0.5)} name={`${i + 1}. ${scene.card ? scene.card.kind : scene.location} ${scene.note ?? ""}`}>
-            <SceneView scene={scene} />
+            <SceneView scene={scene} start={start} />
             {scene.ambience && AMBIENCE_GAIN[scene.ambience] ? (
               <Audio src={staticFile(`sfx/${scene.ambience === "rain-indoor" ? "rain" : scene.ambience}.wav`)} loop volume={(f) => sfxGain * (AMBIENCE_GAIN[scene.ambience!] ?? 0.3) * Math.min(1, f / 8, (dur - f) / 8)} />
             ) : null}
@@ -97,5 +102,6 @@ export const FilmVideo: React.FC<{ project: Project }> = ({ project }) => {
       ))}
     </AbsoluteFill>
     </HeroSkin.Provider>
+    </Film.Provider>
   );
 };

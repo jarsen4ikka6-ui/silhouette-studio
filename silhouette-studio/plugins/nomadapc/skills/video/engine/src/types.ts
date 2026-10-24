@@ -5,18 +5,23 @@ export type Arms = "rest" | "phone" | "mug" | "reach" | "cheer" | "walk" | "hips
 export type Legs = "stand" | "walk" | "sit" | "run";
 
 export type Look = {
-  top?: "jacket" | "coat" | "dress" | "robe" | "hoodie" | "tee" | "raincoat" | "none"; // по умолчанию куртка
+  top?: "jacket" | "coat" | "dress" | "robe" | "hoodie" | "tee" | "raincoat" | "shirt" | "none"; // по умолчанию куртка; shirt — рубашка с воротником
   color?: string; // цвет одежды — главная примета героя
   skin?: string; // кожа: light | fair | tan | olive | brown | dark или "#rrggbb"; без неё выбирается сама
   pants?: string; // цвет штанов (по умолчанию тёмно-синие; у платья и юбки — ноги цвета кожи); "skin" — голые ноги
   shoes?: string;
   trim?: string; // цвет пояса и каймы у накидки (robe)
-  hair?: "short" | "none" | "ponytail" | "bun" | "long" | "curls" | "headband" | "scarf"; // short по умолчанию, none — лысый, curls — кудри (у пожилых седые), scarf — платок
+  hair?: "short" | "spiky" | "none" | "ponytail" | "bun" | "long" | "curls" | "headband" | "scarf"; // short по умолчанию, spiky — торчащие (только toon), none — лысый, curls — кудри (у пожилых седые), scarf — платок
   hairColor?: string; // цвет волос (у headband/scarf без hatColor — цвет повязки или платка)
   glasses?: boolean;
   hat?: "none" | "cap" | "beanie" | "crown";
   hatColor?: string; // цвет шапки; у headband/scarf — цвет ткани (тогда hairColor — цвет волос)
   skirt?: boolean; // длинная юбка вместо штанов
+  // --- стиль toon ---
+  under?: string; // цвет кофты с капюшоном под курткой (у героя — серое худи)
+  apron?: string; // цвет фартука (продавщица, повар)
+  beard?: "mustache" | "beard"; // усы или борода
+  extra?: string; // свои детали персонажа из src/custom/characters.tsx (уникальная причёска, значок, шарф…)
 };
 
 // Ключевой кадр позы: с секунды `at` персонаж переходит в эту позу
@@ -51,6 +56,8 @@ export type SceneText = {
   x?: number; // экранные координаты, если без персонажа
   y?: number;
   side?: "left" | "right";
+  mouth?: number; // toon: сколько секунд от at двигается рот (по умолчанию — пока висит реплика)
+  bubble?: false; // toon: рот двигается под голос, но пузыря нет (крупный план, реплика уже понятна)
 };
 
 export type Overlay =
@@ -72,7 +79,13 @@ export type Overlay =
   | { kind: "label"; text: string; x: number; y: number; tx: number; ty: number; at?: number; dur?: number; color?: string } // подпись со стрелкой (экран)
   | { kind: "panel"; title: string; mark?: "check" | "cross"; text?: string; x: number; y: number; w?: number; h?: number; at?: number; dur?: number; color?: string } // стеклянная панель
   | { kind: "question"; text: string; at?: number; dur?: number } // крупный курсив-вопрос к зрителю
-  | { kind: "heading"; text: string; sub?: string; at?: number; dur?: number; y?: number }; // заголовок главы
+  | { kind: "heading"; text: string; sub?: string; at?: number; dur?: number; y?: number } // заголовок главы
+  // --- стиль toon ---
+  | { kind: "plate"; text: string; at?: number; dur?: number; y?: number; tilt?: number } // жёлтая плашка внизу: «АКЦИЯ»
+  | { kind: "shout"; text: string; at?: number; dur?: number; y?: number } // крупные слова по центру, *золотые*
+  | { kind: "day"; text: string; sub?: string; at?: number; dur?: number } // жёлтая косая лента на весь экран: «ДЕНЬ 1»
+  | { kind: "bignum"; text: string; label?: string; from?: number; time?: number; at?: number; dur?: number; y?: number } // огромное золотое число, накручивается
+  | { kind: "title"; text: string; sub?: string; at?: number; dur?: number }; // название серии с лучами, *золотые* слова
 
 export type Card =
   | { kind: "quote"; text: string; author?: string }
@@ -132,6 +145,10 @@ export type Scene = {
   sfx?: Sfx[];
 };
 
+// Плашка сверху, которая держится через сцены до следующей на том же месте («ПОТРАЧЕНО: 3 400», «ДЕНЬ 1»).
+// В доске at — фраза («@…»), в data — секунды от начала ролика. Пустой text — убрать плашку.
+export type HudItem = { at: number; text: string; place?: "left" | "right" | "right2" };
+
 export type MusicPart = { mood: string; from: number; db?: number };
 
 export type Project = {
@@ -148,6 +165,9 @@ export type Project = {
   voice?: string; // озвучка диктора из public/, например audio/voice.mp3
   voiceAt?: number; // с какой секунды ролика начинается озвучка
   voiceDb?: number;
+  style?: "silhouette" | "toon"; // как рисовать людей: силуэты (по умолчанию) или toon — белые головы, как в мультсериале
+  voiceEnv?: number[]; // громкость озвучки по кадрам (30 в секунду, 0..100) — по ней открывается рот у говорящего
+  hud?: HudItem[];
   hero?: Look; // внешность главного героя (из looks.hero) — по ней красятся руки в кадрах от первого лица
   scenes: Scene[];
 };

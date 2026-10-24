@@ -3,6 +3,8 @@
 import React, { useId } from "react";
 import { CUSTOM_PROPS } from "./custom/props";
 import { PROPS3 } from "./props3";
+import { PROPS_TOON } from "./props-toon";
+import { PROPS_TOON2 } from "./props-toon2";
 import type { Prop } from "./types";
 import { along, clamp, ease, fadeWindow, rand } from "./util";
 
@@ -312,10 +314,16 @@ export const PROPS: Record<string, React.FC<PP>> = {
   bag: Bag,
   bench: Bench,
   ...PROPS3,
+  ...PROPS_TOON,
+  ...PROPS_TOON2,
   ...CUSTOM_PROPS,
 };
 
 // Предмет на сцене: появление/исчезновение, позиция, масштаб, зеркало
+// Предметы с «передом», нарисованные лицом ВПРАВО (машины). Если такой предмет едет влево (x: [больше, меньше]),
+// он сам разворачивается — капотом по ходу движения. Явный flip в доске важнее
+export const FACES_RIGHT = new Set(["t-taxi", "car"]);
+
 export const PropView: React.FC<{ prop: Prop; t: number; p: number }> = ({ prop, t, p }) => {
   const C = PROPS[prop.kind];
   if (!C) return null;
@@ -323,9 +331,11 @@ export const PropView: React.FC<{ prop: Prop; t: number; p: number }> = ({ prop,
   const op = prop.at === undefined && prop.dur === undefined ? 1 : fadeWindow(t, at, prop.dur ?? Infinity, 0.3, 0.4);
   if (op <= 0) return null;
   const s = prop.scale ?? 1;
+  const moving = Array.isArray(prop.x) ? prop.x[1] - prop.x[0] : Number(prop.params?.drive ?? 0);
+  const flip = prop.flip ?? (FACES_RIGHT.has(prop.kind) && moving < 0);
   return (
-    <g transform={`translate(${along(prop.x, p, 960)} ${along(prop.y, p, 900)}) scale(${prop.flip ? -s : s} ${s})`} opacity={op}>
-      <C t={t - at} params={prop.params ?? {}} />
+    <g transform={`translate(${along(prop.x, p, 960)} ${along(prop.y, p, 900)}) scale(${flip ? -s : s} ${s})`} opacity={op}>
+      <C t={t - at} params={{ ...(prop.params ?? {}), _flip: flip }} />
     </g>
   );
 };

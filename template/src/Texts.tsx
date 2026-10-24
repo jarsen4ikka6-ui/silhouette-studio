@@ -1,6 +1,7 @@
 // Все виды текста на экране: реплики, мысли, уведомления, часы, карточки.
 // Всё появляется мягким проявлением, без прыжков.
 import React from "react";
+import { BigNum, DayBand, Plate, Shout, TitleCard } from "./film";
 import { AbsoluteFill } from "remotion";
 import { CHALK, HAND, INTER, SANS, SERIF } from "./fonts";
 import type { Card, Overlay, SceneText } from "./types";
@@ -51,6 +52,11 @@ export const runTime = (o: Overlay, delay: number, def: number) => {
 };
 
 export const OverlayView: React.FC<{ o: Overlay; t: number }> = ({ o, t }) => {
+  if (o.kind === "plate") return <Plate text={o.text} t={t} at={o.at ?? 0} dur={o.dur ?? Infinity} y={o.y} tilt={o.tilt} />;
+  if (o.kind === "shout") return <Shout text={o.text} t={t} at={o.at ?? 0} dur={o.dur ?? Infinity} y={o.y} />;
+  if (o.kind === "day") return <DayBand text={o.text} sub={o.sub} t={t} at={o.at ?? 0} dur={o.dur ?? 2.2} />;
+  if (o.kind === "bignum") return <BigNum text={o.text} label={o.label} from={o.from} time={o.time} t={t} at={o.at ?? 0} dur={o.dur ?? Infinity} y={o.y} />;
+  if (o.kind === "title") return <TitleCard text={o.text} sub={o.sub} t={t} at={o.at ?? 0} dur={o.dur ?? Infinity} />;
   const op = fadeWindow(t, o.at ?? 0, o.dur ?? Infinity, 0.4, 0.4);
   if (op <= 0) return null;
   if (o.kind === "clock") {

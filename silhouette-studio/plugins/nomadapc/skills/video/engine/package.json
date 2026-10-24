@@ -1,12 +1,14 @@
 {
   "name": "silhouette-video",
-  "version": "0.4.0+815bfa87",
+  "version": "0.5.0+2c187572",
   "description": "2D stick-figure explainer videos drawn with code (Awaken style): Remotion",
   "private": true,
   "type": "module",
   "scripts": {
     "transcribe": "node scripts/transcribe.mts",
     "timing": "node scripts/build-timing.mjs",
+    "lines": "node scripts/lines.mjs",
+    "env": "node scripts/voice-env.mts",
     "studio": "remotion studio",
     "preview": "node scripts/preview.mjs",
     "render": "node scripts/render.mjs",

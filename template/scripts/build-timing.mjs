@@ -6,9 +6,14 @@
 //   "dur": "@Все до одного|end"          — до конца этих слов (для dur: длина от at)
 // Фраза ищется в transcripts/<имя>.json (npm run transcribe) начиная с начала сцены, регистр, ё/е и знаки не важны.
 // Ролик без диктора (История): озвучки нет, у сцен пишется "dur" (секунды) или "start" числом, at — секундами.
+// Стиль toon ("style": "toon"): реплики персонажей ставятся сами по transcripts/<имя>.lines.json (npm run lines),
+//   "cast": { "МАМА": "mom" } — какое имя из сценария какой персонаж в кадре; рот открывается под громкость озвучки.
+//   "hud": [{ "at": "@фраза", "text": "ПОТРАЧЕНО: 3 400", "place": "right" }] — плашки сверху через все сцены.
+// Свой персонаж: "looks": { "hero": "char:<имя>" } — внешность из characters/<имя>.json.
 // Запуск: npm run timing -- 01-bez-telefonov   (заодно генерирует музыку ролика)
 import { spawnSync } from "node:child_process";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { stage } from "./staging.mjs";
 
 const name = process.argv[2];
 if (!name) throw new Error("Укажи доску: npm run timing -- <имя файла из boards/ без .json>");
@@ -76,11 +81,22 @@ const resolve = (v, sceneStart, where, key) => {
   return v;
 };
 
-// постоянные персонажи: "look": "hero" -> внешность из board.looks
+// постоянные персонажи: "look": "hero" -> внешность из board.looks; "char:<имя>" -> свой персонаж из characters/
+const charLook = (ref) => {
+  const n = ref.slice(5);
+  const f = `characters/${n}.json`;
+  if (!existsSync(f)) throw new Error(`Нет своего персонажа ${f}`);
+  return JSON.parse(readFileSync(f, "utf8")).look;
+};
 const looks = board.looks ?? {};
+for (const [k, v] of Object.entries(looks)) if (typeof v === "string" && v.startsWith("char:")) looks[k] = charLook(v);
 for (const s of board.scenes)
   for (const a of s.actors ?? []) {
     if (typeof a.look !== "string") continue;
+    if (a.look.startsWith("char:")) {
+      a.look = charLook(a.look);
+      continue;
+    }
     if (!looks[a.look]) throw new Error(`Нет внешности «${a.look}» в looks`);
     a.look = looks[a.look];
   }
@@ -96,7 +112,7 @@ const scenes = board.scenes.map((s, i) => {
 
 // 3. табличка с числом должна успеть докрутиться до цифры и повисеть: короткий dur продлеваем сами
 // (задержка + накрутка + 1.2 c с готовой цифрой + 0.4 c затухание), но не дальше конца сцены
-const ROLL = { stat: [0.25, 1.6], counter: [0.2, 2], meter: [0.4, 1.8], bars: [0.3, 1.4] };
+const ROLL = { stat: [0.25, 1.6], counter: [0.2, 2], meter: [0.4, 1.8], bars: [0.3, 1.4], bignum: [0.2, 1.2] };
 const warns = [];
 for (const [i, s] of scenes.entries())
   for (const o of s.overlays ?? []) {
@@ -111,11 +127,99 @@ for (const [i, s] of scenes.entries())
     } else if (o.dur < 1.2) warns.push(`Сцена ${i + 1}: «${o.kind}» видно всего ${o.dur} c — зритель не успеет прочитать`);
   }
 
+// 4. toon: реплики из сценария -> пузыри над говорящим и рот под голос
+const linesFile = `transcripts/${name}.lines.json`;
+const cast = board.cast ?? {};
+if (board.style === "toon" && trFile && board.bubbles !== "manual") {
+  if (!existsSync(linesFile)) warns.push(`нет ${linesFile} — пузыри реплик не поставлены. Запусти npm run lines -- ${name}`);
+  else {
+    const lines = JSON.parse(readFileSync(linesFile, "utf8"));
+    const missing = new Set();
+    // длинную реплику режем на куски по предложениям (не больше ~24 слов в пузыре)
+    const chunks = [];
+    for (const l of lines) {
+      if (!l.who || !l.words.length) continue;
+      const id = cast[l.who] ?? cast[l.who.toLowerCase()];
+      if (!id) {
+        missing.add(l.who);
+        continue;
+      }
+      let cur = [];
+      const flush = () => {
+        if (cur.length) chunks.push({ id, who: l.who, text: cur.map((w) => w.w).join(" "), start: cur[0].start + voiceAt, end: cur.at(-1).end + voiceAt });
+        cur = [];
+      };
+      for (const w of l.words) {
+        cur.push(w);
+        if ((/[.!?…]["»]?$/.test(w.w) && cur.length >= 4) || cur.length >= 24 || (/,$/.test(w.w) && cur.length >= 16)) flush();
+      }
+      flush();
+    }
+    for (const n of missing) warns.push(`персонажа «${n}» нет в cast доски — его реплики без пузыря и рот не двигается`);
+    const ends = starts.map((_, i) => (i + 1 < starts.length ? starts[i + 1] : total));
+    chunks.forEach((c, ci) => {
+      const next = chunks[ci + 1];
+      // пузырь висит чуть дольше слов, но исчезает до начала следующей реплики
+      const hold = Math.min(c.end + 0.6, next ? Math.max(c.end + 0.1, next.start - 0.05) : c.end + 0.6);
+      scenes.forEach((s, i) => {
+        const a0 = Math.max(c.start, starts[i]);
+        const a1 = Math.min(hold, ends[i]);
+        // в сцене должны звучать сами слова, а не только «хвост» пузыря после них
+        if (a1 - a0 < 0.15 || Math.min(c.end, ends[i]) - a0 < 0.4 || s.card) return;
+        const at = Math.round((a0 - starts[i] - 0.05) * 100) / 100;
+        const own = (s.texts ?? []).some((x) => x.actor === c.id && x.auto !== true && (x.at ?? 0) < a1 - starts[i] && (x.at ?? 0) + (x.dur ?? 99) > at);
+        if (own) return; // реплику в этой сцене уже поставили руками
+        const inFrame = (s.actors ?? []).some((a) => a.id === c.id);
+        if (!inFrame && !(s.actors ?? []).length) return; // инфографика без людей — голос звучит за кадром
+        if (!inFrame) warns.push(`Сцена ${i + 1}: говорит ${c.who} (${c.id}), а этого персонажа нет в кадре — пузырь у края`);
+        s.texts ??= [];
+        s.texts.push({
+          kind: inFrame ? "say" : "offscreen",
+          auto: true,
+          actor: c.id,
+          text: c.text,
+          at: Math.max(0, at),
+          dur: Math.round((a1 - starts[i] - Math.max(0, at)) * 100) / 100,
+          mouth: Math.round((Math.min(c.end, ends[i]) - starts[i] - Math.max(0, at) + 0.05) * 100) / 100,
+          ...(board.bubbles === false ? { bubble: false } : {}),
+        });
+      });
+    });
+  }
+}
+
+// постановка: машины и идущие — по ходу движения, люди — к собеседнику, вещи — на столешницу; ошибки — в ВНИМАНИЕ
+const fixes = stage(scenes, { toon: board.style === "toon", warns });
+
+// плашки сверху (hud): время фразой -> секунды от начала ролика
+let hudFrom = 0;
+const hud = (board.hud ?? []).map((h, i) => {
+  let at = h.at ?? 0;
+  if (typeof at === "string") {
+    const { phrase, mod } = parseRef(at.startsWith("@") ? at : `@${at}`);
+    const hit = find(phrase, hudFrom, `hud ${i + 1}`);
+    at = (mod === "end" ? hit.end : hit.start) + (/^[+-]\d/.test(mod) ? Number(mod) : 0);
+  }
+  hudFrom = at;
+  return { ...h, at: Math.round(at * 100) / 100 };
+});
+
+// громкость озвучки по кадрам — для рта (только toon)
+let voiceEnv;
+if (board.style === "toon" && trFile) {
+  const envFile = `transcripts/${name}.env.json`;
+  if (!existsSync(envFile)) {
+    const r = spawnSync(process.execPath, ["scripts/voice-env.mts", name], { stdio: "inherit" });
+    if (r.status !== 0) warns.push("не получилось посчитать громкость озвучки — рот будет двигаться ровно");
+  }
+  if (existsSync(envFile)) voiceEnv = JSON.parse(readFileSync(envFile, "utf8")).env;
+}
+
 const music = (board.music ?? []).map((m) => ({ ...m, from: typeof m.from === "string" ? find(m.from.replace(/^@/, ""), 0, "music").start - 1 : m.from }));
-const { scenes: _x, lead: _l, tail: _t, looks: _lk, ...head } = board;
+const { scenes: _x, lead: _l, tail: _t, looks: _lk, cast: _c, hud: _h, bubbles: _b, ...head } = board;
 mkdirSync("data", { recursive: true });
 const hero = looks.hero ?? Object.values(looks)[0];
-writeFileSync(`data/${name}.json`, JSON.stringify({ fps: 30, width: 1920, height: 1080, ...head, ...(hero ? { hero } : {}), music, scenes }, null, 2));
+writeFileSync(`data/${name}.json`, JSON.stringify({ fps: 30, width: 1920, height: 1080, ...head, ...(hero ? { hero } : {}), ...(hud.length ? { hud } : {}), ...(voiceEnv ? { voiceEnv } : {}), music, scenes }, null, 2));
 
 let acc = 0;
 for (const [i, s] of scenes.entries()) {
@@ -123,6 +227,7 @@ for (const [i, s] of scenes.entries()) {
   console.log(`${String(i + 1).padStart(2)}  ${m}:${(acc % 60).toFixed(1).padStart(4, "0")}  ${s.dur.toFixed(1).padStart(5)} c  ${s.card ? "[карточка]" : s.location}  ${s.note ?? ""}`);
   acc += s.dur;
 }
+for (const f of fixes) console.log(`ПОПРАВИЛ САМ: ${f}`);
 for (const w of warns) console.log(`ВНИМАНИЕ: ${w}`);
 console.log(`Готово: ${scenes.length} сцен, ${Math.floor(total / 60)}:${String(Math.round(total % 60)).padStart(2, "0")} -> data/${name}.json`);
 
