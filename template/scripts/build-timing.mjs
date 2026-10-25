@@ -10,9 +10,10 @@
 //   "cast": { "МАМА": "mom" } — какое имя из сценария какой персонаж в кадре; рот открывается под громкость озвучки.
 //   "hud": [{ "at": "@фраза", "text": "ПОТРАЧЕНО: 3 400", "place": "right" }] — плашки сверху через все сцены.
 // Свой персонаж: "looks": { "hero": "char:<имя>" } — внешность из characters/<имя>.json.
+//   "main": true в characters/<имя>.json — главный герой канала: он hero в каждой доске, где hero не задан.
 // Запуск: npm run timing -- 01-bez-telefonov   (заодно генерирует музыку ролика)
 import { spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { stage } from "./staging.mjs";
 
 const name = process.argv[2];
@@ -89,6 +90,14 @@ const charLook = (ref) => {
   return JSON.parse(readFileSync(f, "utf8")).look;
 };
 const looks = board.looks ?? {};
+// главный герой канала ("main": true в characters/<имя>.json) — герой любого ролика, если в доске свой hero не задан
+if (!looks.hero && existsSync("characters")) {
+  const main = readdirSync("characters").find((f) => f.endsWith(".json") && JSON.parse(readFileSync(`characters/${f}`, "utf8")).main);
+  if (main) {
+    looks.hero = `char:${main.slice(0, -5)}`;
+    console.log(`Главный герой: ${looks.hero.slice(5)} (characters/${main})`);
+  }
+}
 for (const [k, v] of Object.entries(looks)) if (typeof v === "string" && v.startsWith("char:")) looks[k] = charLook(v);
 for (const s of board.scenes)
   for (const a of s.actors ?? []) {
