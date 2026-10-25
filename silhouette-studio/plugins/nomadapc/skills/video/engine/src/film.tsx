@@ -7,7 +7,7 @@ import { clamp, ease, fadeWindow } from "./util";
 
 export const ENV_FPS = 30; // огибающая озвучки: одно число 0..100 на каждую 1/30 секунды
 
-export type FilmInfo = { style: "silhouette" | "toon"; env?: number[]; voiceAt: number; hud?: HudItem[] };
+export type FilmInfo = { style: "silhouette" | "toon"; env?: number[]; voiceAt: number; hud?: HudItem[]; lang?: string };
 export const Film = createContext<FilmInfo>({ style: "silhouette", voiceAt: 0 });
 export const useFilm = () => useContext(Film);
 

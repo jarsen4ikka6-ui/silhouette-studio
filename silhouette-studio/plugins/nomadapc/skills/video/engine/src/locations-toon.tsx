@@ -4,6 +4,7 @@
 import React, { useId } from "react";
 import { RUBIK } from "./fonts";
 import { rand } from "./util";
+import { useWord } from "./words";
 
 type P = { t: number; params: Record<string, number | string | boolean> };
 const useUid = () => useId().replace(/[^a-zA-Z0-9]/g, "");
@@ -52,7 +53,7 @@ const Halo: React.FC<{ x: number; y: number; r: number; color?: string; o?: numb
 const BOX_COLORS = ["#e2574c", "#f2b134", "#4fb0c6", "#7bc47f", "#e98ab7", "#f4e9d2", "#8b7bd8", "#f08a3c"];
 
 // стеллаж с цветными коробками и банками
-const Shelf: React.FC<{ x: number; y: number; w: number; rows?: number; seed: number }> = ({ x, y, w, rows = 4, seed }) => {
+const Shelf: React.FC<{ x: number; y: number; w: number; rows?: number; seed: number; empty?: boolean }> = ({ x, y, w, rows = 4, seed, empty }) => {
   const rowH = 118;
   return (
     <g>
@@ -62,7 +63,7 @@ const Shelf: React.FC<{ x: number; y: number; w: number; rows?: number; seed: nu
         const items: React.ReactNode[] = [];
         let cx = x + 6;
         let i = 0;
-        while (cx < x + w - 30) {
+        while (!empty && cx < x + w - 30) {
           const k = seed * 31 + r * 7 + i;
           const bw = 30 + rand(k) * 44;
           const bh = 46 + rand(k + 3) * 52;
@@ -158,26 +159,32 @@ const Pendant: React.FC<{ x: number; y: number; color?: string; light?: string; 
 );
 
 // ценник «АКЦИЯ» на полке
-const Tag: React.FC<{ x: number; y: number; text?: string }> = ({ x, y, text = "АКЦИЯ" }) => (
+const Tag: React.FC<{ x: number; y: number; text?: string }> = ({ x, y, text }) => {
+  const w = useWord();
+  return (
   <g transform={`translate(${x} ${y}) rotate(-4)`}>
     <rect x={-46} y={-16} width={92} height={32} rx={4} fill="#f6d23b" />
     <text y={8} textAnchor="middle" fontFamily={RUBIK} fontWeight={900} fontSize={20} fill="#c8302a">
-      {text}
+      {text ?? w("promo")}
     </text>
   </g>
-);
+  );
+};
 
-// Ночной магазинчик у дома. params: sign — вывеска («ПРОДУКТЫ 24»), window — окно с хлебным лотком (true), people — покупатели на фоне (true)
-const TShop: React.FC<P> = ({ t, params }) => (
+// Ночной магазинчик у дома. params: sign — вывеска («ПРОДУКТЫ 24»), window — окно с хлебным лотком (true), people — покупатели на фоне (true), empty — пустые полки
+const TShop: React.FC<P> = ({ t, params }) => {
+  const w = useWord();
+  const empty = params.empty === true;
+  return (
   <Svg>
     <VGrad w={1920} h={900} stops={[[0, "#1c2348"], [1, "#2e3368"]]} />
-    <Shelf x={60} y={250} w={640} seed={1} />
-    <Shelf x={1220} y={250} w={640} seed={2} />
-    {[[150, 368], [520, 486], [1330, 368], [1700, 604], [380, 722]].map(([x, y], i) => (
-      <Tag key={i} x={x} y={y} text={i % 2 ? "−50%" : "АКЦИЯ"} />
+    <Shelf x={60} y={250} w={640} seed={1} empty={empty} />
+    <Shelf x={1220} y={250} w={640} seed={2} empty={empty} />
+    {!empty && [[150, 368], [520, 486], [1330, 368], [1700, 604], [380, 722]].map(([x, y], i) => (
+      <Tag key={i} x={x} y={y} text={i % 2 ? "−50%" : undefined} />
     ))}
     {params.window === false ? (
-      <Shelf x={760} y={250} w={400} seed={3} />
+      <Shelf x={760} y={250} w={400} seed={3} empty={empty} />
     ) : (
       <g>
         <NightWindow x={800} y={280} w={320} h={260} seed={4} />
@@ -186,14 +193,14 @@ const TShop: React.FC<P> = ({ t, params }) => (
         {[0, 1, 2].map((r) => (
           <g key={r}>
             <rect x={780} y={680 + r * 70} width={360} height={8} fill="#3d2a1e" />
-            {Array.from({ length: 5 }, (_, i) => (
+            {!empty && Array.from({ length: 5 }, (_, i) => (
               <ellipse key={i} cx={815 + i * 72} cy={664 + r * 70} rx={30} ry={17} fill={["#d79a52", "#c6843e", "#e0b070"][(i + r) % 3]} />
             ))}
           </g>
         ))}
         <rect x={880} y={570} width={160} height={36} rx={6} fill="#f6d23b" />
         <text x={960} y={597} textAnchor="middle" fontFamily={RUBIK} fontWeight={900} fontSize={24} fill="#5a3f2c">
-          ХЛЕБ
+          {w("bread")}
         </text>
       </g>
     )}
@@ -202,7 +209,7 @@ const TShop: React.FC<P> = ({ t, params }) => (
     <rect x={732} y={112} width={456} height={86} rx={10} fill="none" stroke="#ff6b5a" strokeWidth={4} opacity={0.9} />
     <Halo x={960} y={155} r={300} ry={110} color="#ff7a5c" o={0.35} />
     <text x={960} y={176} textAnchor="middle" fontFamily={RUBIK} fontWeight={800} fontSize={58} fill="#ffd6c9" letterSpacing={3}>
-      {str(params.sign, "ПРОДУКТЫ 24")}
+      {str(params.sign, w("shop24"))}
     </text>
     {/* тёплые лампы под потолком */}
     {[300, 1620].map((lx) => (
@@ -225,7 +232,8 @@ const TShop: React.FC<P> = ({ t, params }) => (
     <Halo x={1400} y={760} r={620} ry={360} color="#ffb870" o={0.22} />
     <Dust t={t} />
   </Svg>
-);
+  );
+};
 
 // Кухня дома вечером: тёплые стены, красный абажур, деревянные шкафчики, холодильник с магнитами, окно со шторами, часы.
 // params: window (true), lampX — где абажур (960)
@@ -406,6 +414,7 @@ const TCorridor: React.FC<P> = ({ t }) => (
 // params: lampX — где фонарь (1450), shops — вывески внизу (true), car — машина у тротуара (true)
 const TStreet: React.FC<P> = ({ t, params }) => {
   const lx = num(params.lampX, 1450);
+  const w = useWord();
   return (
     <Svg>
       <VGrad w={1920} h={900} stops={[[0, "#0f1533"], [1, "#27336a"]]} />
@@ -429,9 +438,9 @@ const TStreet: React.FC<P> = ({ t, params }) => {
       {params.shops === false
         ? null
         : ([
-            [100, "ШАУРМА", "#f08a3c"],
-            [620, "АПТЕКА", "#5fd08a"],
-            [1520, "ПРОДУКТЫ", "#ff6b5a"],
+            [100, w("kebab"), "#f08a3c"],
+            [620, w("pharmacy"), "#5fd08a"],
+            [1520, w("shop"), "#ff6b5a"],
           ] as [number, string, string][]).map(([x, label, c], i) => (
             <g key={i}>
               <rect x={x} y={660} width={360} height={200} fill="#141a38" />

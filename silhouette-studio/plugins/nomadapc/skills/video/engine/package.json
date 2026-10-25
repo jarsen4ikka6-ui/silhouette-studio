@@ -1,6 +1,6 @@
 {
   "name": "silhouette-video",
-  "version": "0.5.0+2c187572",
+  "version": "0.6.0+aa02b23f",
   "description": "2D stick-figure explainer videos drawn with code (Awaken style): Remotion",
   "private": true,
   "type": "module",

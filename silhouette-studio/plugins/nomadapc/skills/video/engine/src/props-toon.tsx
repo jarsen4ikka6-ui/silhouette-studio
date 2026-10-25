@@ -3,6 +3,7 @@
 // t-chair — стул и t-sofa — диван для сидящих (без front), t-money — пачка денег, t-bag — пакет с продуктами, t-tv — телевизор с новостями (params.text — бегущая строка)
 import React from "react";
 import { RUBIK } from "./fonts";
+import { useWord } from "./words";
 
 type PP = { t: number; params: Record<string, number | string | boolean> };
 const OL = "#1c1a24";
@@ -129,7 +130,8 @@ const Bag: React.FC<PP> = () => (
 
 // телевизор: новости. params.text — бегущая строка, params.title — заголовок
 const Tv: React.FC<PP> = ({ t, params }) => {
-  const text = str(params.text, "СРОЧНО");
+  const w = useWord();
+  const text = str(params.text, w("urgent"));
   return (
     <g>
       <rect x={-260} y={-320} width={520} height={320} rx={18} fill="#1d2030" stroke={OL} strokeWidth={W} />
@@ -138,7 +140,7 @@ const Tv: React.FC<PP> = ({ t, params }) => {
       <rect x={-50} y={-144} width={100} height={70} rx={20} fill="#e2574c" stroke={OL} strokeWidth={2.4} />
       <rect x={-240} y={-100} width={480} height={34} fill="#e2574c" />
       <text x={-228} y={-74} fontFamily={RUBIK} fontWeight={800} fontSize={24} fill="#fff">
-        {str(params.title, "НОВОСТИ")}
+        {str(params.title, w("news"))}
       </text>
       <svg x={-240} y={-66} width={480} height={28} overflow="hidden">
         <rect width={480} height={28} fill="#f4ede0" />

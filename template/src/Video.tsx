@@ -23,7 +23,7 @@ export const timeline = (project: Project) => {
   });
 };
 
-export const filmOf = (project: Project) => ({ style: project.style ?? "silhouette", env: project.voiceEnv, voiceAt: project.voiceAt ?? 0, hud: project.hud });
+export const filmOf = (project: Project) => ({ style: project.style ?? "silhouette", env: project.voiceEnv, voiceAt: project.voiceAt ?? 0, hud: project.hud, lang: project.language });
 
 export const totalDuration = (project: Project) => project.scenes.reduce((a, s) => a + s.dur, 0);
 

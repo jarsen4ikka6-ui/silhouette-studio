@@ -227,6 +227,24 @@ for (const [i, s] of scenes.entries()) {
   console.log(`${String(i + 1).padStart(2)}  ${m}:${(acc % 60).toFixed(1).padStart(4, "0")}  ${s.dur.toFixed(1).padStart(5)} c  ${s.card ? "[карточка]" : s.location}  ${s.note ?? ""}`);
   acc += s.dur;
 }
+// таймкоды глав для описания на YouTube: у сцены "chapter": "Название" -> out/<ролик>-timecodes.txt
+const chapters = [];
+acc = 0;
+for (const s of scenes) {
+  if (typeof s.chapter === "string" && s.chapter.trim()) chapters.push({ at: chapters.length ? Math.floor(acc) : 0, title: s.chapter.trim() });
+  acc += s.dur;
+}
+if (chapters.length) {
+  const tc = (sec) => (sec >= 3600 ? `${Math.floor(sec / 3600)}:${String(Math.floor((sec % 3600) / 60)).padStart(2, "0")}` : `${Math.floor(sec / 60)}`) + `:${String(sec % 60).padStart(2, "0")}`;
+  mkdirSync("out", { recursive: true });
+  writeFileSync(`out/${name}-timecodes.txt`, chapters.map((c) => `${tc(c.at)} ${c.title}`).join("\n") + "\n");
+  if (chapters.length < 3) warns.push(`глав всего ${chapters.length} — YouTube покажет таймкоды, только если их не меньше 3`);
+  chapters.forEach((c, i) => {
+    const end = i + 1 < chapters.length ? chapters[i + 1].at : total;
+    if (end - c.at < 10) warns.push(`глава «${c.title}» короче 10 с — YouTube такие не принимает, объедини с соседней`);
+  });
+  console.log(`Таймкоды для описания (${chapters.length} глав) -> out/${name}-timecodes.txt`);
+}
 for (const f of fixes) console.log(`ПОПРАВИЛ САМ: ${f}`);
 for (const w of warns) console.log(`ВНИМАНИЕ: ${w}`);
 console.log(`Готово: ${scenes.length} сцен, ${Math.floor(total / 60)}:${String(Math.round(total % 60)).padStart(2, "0")} -> data/${name}.json`);

@@ -222,6 +222,21 @@ export const ToonCharacter: React.FC<{ actor: Actor; t: number; x: number; y: nu
     }
     if (hairStyle === "bun" || hairStyle === "ponytail" || hairStyle === "long" || hairStyle === "headband")
       hair = <path d={`M ${-R - 1} 10 A ${R + 1} ${R + 1} 0 0 1 ${R + 1} 10 Q ${R - 10} -34 ${off} -36 Q ${-R + 10} -34 ${-R - 1} 10 Z`} fill={c(hairC)} {...st} />;
+    if (hairStyle === "bowl") {
+      // «шапочка» (цезарь): шапка волос чуть шире головы, ровная чёлка до бровей с парой прорезей
+      const notch = (xs: number[], y: number) => xs.map((xx) => <line key={xx} x1={xx} y1={y + 1} x2={xx + 1} y2={y - 11} stroke={mono ?? OL} strokeWidth={2.2} strokeLinecap="round" />);
+      hair = side ? (
+        <g transform={`scale(${dir} 1)`}>
+          <path d={`M ${R + 3} -18 A ${R + 5} ${R + 5} 0 0 0 ${-R - 4} 8 Q ${-R - 2} 24 ${-R + 10} 30 Q ${-R * 0.32} 28 ${-R * 0.4} 0 Q ${-R * 0.34} -18 ${R * 0.05} -21 Q ${R * 0.6} -24 ${R + 3} -18 Z`} fill={c(hairC)} {...st} />
+          {notch([R * 0.5, R * 0.78], -21)}
+        </g>
+      ) : (
+        <g>
+          <path d={`M ${-R - 5} 2 A ${R + 5} ${R + 5} 0 0 1 ${R + 5} 2 Q ${R + 2} -14 ${R - 8} -19 Q 0 -26 ${-R + 8} -19 Q ${-R - 2} -14 ${-R - 5} 2 Z`} fill={c(hairC)} {...st} />
+          {notch([-34 + off, -12 + off, 14 + off, 36 + off], -21)}
+        </g>
+      );
+    }
     if (hairStyle === "curls")
       hair = (
         <g>
@@ -288,7 +303,9 @@ export const ToonCharacter: React.FC<{ actor: Actor; t: number; x: number; y: nu
       {legs.map((l, i) => (
         <g key={i}>
           {/* штанина кончается внутри ботинка */}
-          <Stroke pts={[l.hip, l.knee, [l.foot[0], l.foot[1] - 12]]} w={pants === skin ? 12 : LEG_W} color={pants} mono={mono} />
+          <Stroke pts={[l.hip, l.knee, [l.foot[0], l.foot[1] - 12]]} w={pants === skin ? 12 : LEG_W + (look.cuffs ? 4 : 0)} color={pants} mono={mono} />
+          {/* трико: резинка над кедом */}
+          {look.cuffs ? <Stroke pts={[[lerp(l.knee[0], l.foot[0], 0.86), lerp(l.knee[1], l.foot[1] - 12, 0.86)], [l.foot[0], l.foot[1] - 12]]} w={LEG_W - 2} color={darken(pants, 0.12)} mono={mono} /> : null}
           <Shoe at={[l.foot[0] + (dir ? dir * 4 : 0), Math.min(l.foot[1] + 2, 0)]} d={dir} far={side && i === 0} mono={mono} />
         </g>
       ))}
@@ -297,6 +314,7 @@ export const ToonCharacter: React.FC<{ actor: Actor; t: number; x: number; y: nu
       <path d={torso} fill={mono ?? `url(#tc${uid})`} stroke={mono ?? OL} strokeWidth={OLW} strokeLinejoin="round" />
       {mono ? null : <Clothes />}
       <Hood mono={mono} />
+      {!mono && look.tee && top === "hoodie" && !side ? <path d={`M ${tx - 12} ${shY - 9} L ${tx + 12} ${shY - 9} L ${tx} ${shY + 7} Z`} fill={look.tee} stroke={OL} strokeWidth={OLW * 0.7} strokeLinejoin="round" /> : null}
       {(side ? armsPts.slice(1) : armsPts).map((a, i) => (
         <Arm key={i} a={a} mono={mono} />
       ))}
@@ -332,10 +350,13 @@ export const ToonCharacter: React.FC<{ actor: Actor; t: number; x: number; y: nu
         {top === "hoodie" && !side ? (
           <g>
             <path d={`M ${tx - 22} ${bottom - 34} L ${tx + 22} ${bottom - 34} L ${tx + 28} ${bottom - 10} L ${tx - 28} ${bottom - 10} Z`} fill="none" stroke={darken(cloth, 0.25)} strokeWidth={2} />
-            <line x1={tx - 6} y1={shY + 4} x2={tx - 7} y2={shY + 46} stroke="#f2f0ec" strokeWidth={2.4} strokeLinecap="round" />
-            <line x1={tx + 6} y1={shY + 4} x2={tx + 7} y2={shY + 46} stroke="#f2f0ec" strokeWidth={2.4} strokeLinecap="round" />
+            <line x1={tx - 9} y1={shY + 4} x2={tx - 10} y2={shY + 46} stroke={look.strings ?? "#f2f0ec"} strokeWidth={2.4} strokeLinecap="round" />
+            <line x1={tx + 9} y1={shY + 4} x2={tx + 10} y2={shY + 46} stroke={look.strings ?? "#f2f0ec"} strokeWidth={2.4} strokeLinecap="round" />
+            {/* резинка внизу кофты */}
+            <path d={`M ${tx - halfBot + 3} ${bottom - 9} L ${tx + halfBot - 3} ${bottom - 9}`} stroke={darken(cloth, 0.18)} strokeWidth={2} />
           </g>
         ) : null}
+        {top === "hoodie" && side ? <path d={`M ${tx - dir * 4} ${shY + 2} Q ${tx - dir * 30} ${shY + 8} ${tx - dir * 34} ${shY + 34}`} fill="none" stroke={darken(cloth, 0.3)} strokeWidth={2} /> : null}
         {top === "shirt" ? (
           <g>
             <path d={`M ${tx - 16} ${shY - 8} L ${tx - 2} ${shY + 10} L ${tx - 20} ${shY + 8} Z`} fill={lighten(cloth, 0.15)} stroke={OL} strokeWidth={OLW * 0.7} strokeLinejoin="round" />
@@ -440,7 +461,27 @@ export const ToonCharacter: React.FC<{ actor: Actor; t: number; x: number; y: nu
       {mouth}
       {look.beard === "mustache" || look.beard === "beard" ? <path d={`M ${fx - 13} ${mouthY - 6} Q ${fx} ${mouthY - 13} ${fx + 13} ${mouthY - 6} Q ${fx} ${mouthY - 3} ${fx - 13} ${mouthY - 6} Z`} fill={hairC} stroke={OL} strokeWidth={1.6} /> : null}
       {look.beard === "beard" ? <path d={`M ${headX - R + 10} ${headY + 22} Q ${headX} ${headY + R + 26} ${headX + R - 10} ${headY + 22} Q ${headX + R * 0.5} ${headY + R - 4} ${fx} ${mouthY + 8} Q ${headX - R * 0.5} ${headY + R - 4} ${headX - R + 10} ${headY + 22} Z`} fill={hairC} stroke={OL} strokeWidth={2} /> : null}
-      {look.glasses ? (
+      {look.glasses === "round" ? (
+        <g fill="none" stroke={OL} strokeWidth={2.6}>
+          {side ? (
+            <g>
+              {/* боком: два одинаковых круглых стекла, дужка идёт назад к уху */}
+              <circle cx={fx + dir * (spacing + 2)} cy={fy + 1} r={13.5} />
+              <circle cx={fx - dir * (spacing + 2)} cy={fy + 1} r={13.5} />
+              <line x1={fx + dir * 2.5} y1={fy - 2} x2={fx - dir * 2.5} y2={fy - 2} />
+              <line x1={fx - dir * (spacing + 15.5)} y1={fy - 1} x2={headX - dir * R * 0.42} y2={fy - 5} />
+            </g>
+          ) : (
+            <g>
+              <circle cx={fx - spacing - 1} cy={fy + 2} r={15} />
+              <circle cx={fx + spacing + 1} cy={fy + 2} r={15} />
+              <path d={`M ${fx - spacing + 14} ${fy - 1} Q ${fx} ${fy - 6} ${fx + spacing - 14} ${fy - 1}`} />
+              <line x1={fx - spacing - 16} y1={fy} x2={headX - R + 2} y2={fy - 3} />
+              <line x1={fx + spacing + 16} y1={fy} x2={headX + R - 2} y2={fy - 3} />
+            </g>
+          )}
+        </g>
+      ) : look.glasses ? (
         <g fill="none" stroke="#5a4636" strokeWidth={2.2}>
           <circle cx={fx - spacing} cy={fy} r={12} />
           <circle cx={fx + spacing} cy={fy} r={12} />

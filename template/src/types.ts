@@ -11,9 +11,9 @@ export type Look = {
   pants?: string; // цвет штанов (по умолчанию тёмно-синие; у платья и юбки — ноги цвета кожи); "skin" — голые ноги
   shoes?: string;
   trim?: string; // цвет пояса и каймы у накидки (robe)
-  hair?: "short" | "spiky" | "none" | "ponytail" | "bun" | "long" | "curls" | "headband" | "scarf"; // short по умолчанию, spiky — торчащие (только toon), none — лысый, curls — кудри (у пожилых седые), scarf — платок
+  hair?: "short" | "spiky" | "none" | "ponytail" | "bun" | "long" | "curls" | "headband" | "scarf" | "bowl"; // short по умолчанию, spiky — торчащие (только toon), none — лысый, curls — кудри (у пожилых седые), scarf — платок, bowl — «шапочка»/цезарь с прямой чёлкой (только toon)
   hairColor?: string; // цвет волос (у headband/scarf без hatColor — цвет повязки или платка)
-  glasses?: boolean;
+  glasses?: boolean | "round"; // round — круглые в тонкой чёрной оправе, с дужками (только toon)
   hat?: "none" | "cap" | "beanie" | "crown";
   hatColor?: string; // цвет шапки; у headband/scarf — цвет ткани (тогда hairColor — цвет волос)
   skirt?: boolean; // длинная юбка вместо штанов
@@ -21,6 +21,9 @@ export type Look = {
   under?: string; // цвет кофты с капюшоном под курткой (у героя — серое худи)
   apron?: string; // цвет фартука (продавщица, повар)
   beard?: "mustache" | "beard"; // усы или борода
+  tee?: string; // цвет футболки, которая видна в вырезе худи
+  strings?: string; // цвет шнурков капюшона (по умолчанию белые)
+  cuffs?: boolean; // штаны-трико с резинкой внизу (оверсайз)
   extra?: string; // свои детали персонажа из src/custom/characters.tsx (уникальная причёска, значок, шарф…)
 };
 
@@ -127,6 +130,7 @@ export type Prop = { kind: string; x: number | [number, number]; y: number | [nu
 export type Scene = {
   dur: number;
   note?: string;
+  chapter?: string; // с этой сцены начинается глава (таймкоды для описания YouTube)
   location?: string; // bedroom | kitchen | street | meadow
   params?: Record<string, number | string | boolean>; // настройки локации (lamp, lampOffAt…)
   card?: Card; // если задано — вместо локации чёрная карточка

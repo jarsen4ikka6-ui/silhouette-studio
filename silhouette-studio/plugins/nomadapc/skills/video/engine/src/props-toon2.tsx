@@ -6,6 +6,7 @@
 // t-crowd — массовка (класс, очередь, прохожие, толпа)
 import React from "react";
 import { RUBIK } from "./fonts";
+import { useWord } from "./words";
 import { ToonCharacter } from "./Toon";
 import type { Look } from "./types";
 import { clamp, ease, rand } from "./util";
@@ -31,6 +32,7 @@ const Inf: React.FC<{ x: number; y: number; w: number; color?: string }> = ({ x,
 // банковская карта: params.name — имя на карте, params.balance — что на балансе («∞»), params.color
 const Card: React.FC<PP> = ({ t, params }) => {
   const c = str(params.color, "#1d1f2b");
+  const w = useWord();
   const shine = ((t * 0.5) % 2) * 520 - 160;
   return (
     <g transform="translate(-170 -214)">
@@ -47,7 +49,7 @@ const Card: React.FC<PP> = ({ t, params }) => {
       <rect x={34} y={64} width={54} height={42} rx={8} fill="#e6c068" stroke={OL} strokeWidth={2} />
       <path d="M 34 85 H 88 M 61 64 V 106" stroke="#b8923e" strokeWidth={2} />
       <text x={34} y={176} fontFamily={RUBIK} fontWeight={700} fontSize={22} fill="#e9e6dd" letterSpacing={3}>
-        {str(params.name, "ТВОЯ КАРТА")}
+        {str(params.name, w("yourCard"))}
       </text>
       {str(params.balance, "∞") === "∞" ? (
         <Inf x={272} y={70} w={80} />
@@ -83,6 +85,7 @@ const Envelope: React.FC<PP> = ({ params }) => (
 // платёжный терминал: params.sum — сумма на экране, params.paid — с какой секунды «ОПЛАЧЕНО» (зелёный экран)
 const Terminal: React.FC<PP> = ({ t, params }) => {
   const paid = typeof params.paid === "number" && t >= params.paid;
+  const w = useWord();
   const pop = paid ? 1 + Math.sin(clamp((t - (params.paid as number)) / 0.3) * Math.PI) * 0.06 : 1;
   return (
     <g transform="translate(-80 -250)">
@@ -93,13 +96,13 @@ const Terminal: React.FC<PP> = ({ t, params }) => {
           <g>
             <path d="M 56 66 l 16 16 l 32 -36" fill="none" stroke="#fff" strokeWidth={9} strokeLinecap="round" strokeLinejoin="round" />
             <text x={80} y={106} textAnchor="middle" fontFamily={RUBIK} fontWeight={800} fontSize={15} fill="#fff">
-              ОПЛАЧЕНО
+              {w("paid")}
             </text>
           </g>
         ) : (
           <g>
             <text x={80} y={46} textAnchor="middle" fontFamily={RUBIK} fontWeight={600} fontSize={14} fill="#7fe0a6">
-              СУММА
+              {w("sum")}
             </text>
             <text x={80} y={86} textAnchor="middle" fontFamily={RUBIK} fontWeight={800} fontSize={str(params.sum, "").length > 7 ? 24 : 30} fill="#7fe0a6">
               {str(params.sum, "0")}
@@ -132,6 +135,7 @@ const Receipt: React.FC<PP> = ({ t, params }) => {
 // Узнаётся спереди: длинный капот, пологое лобовое стекло, жёлтая фара; сзади: короткий багажник, крутое заднее стекло, красный фонарь
 const Taxi: React.FC<PP> = ({ t, params }) => {
   const c = str(params.color, "#f6c63b");
+  const w = useWord();
   const spin = (t * 400) % 360;
   const Wheel: React.FC<{ x: number }> = ({ x }) => (
     <g transform={`translate(${x} -40) rotate(${spin})`}>
@@ -155,7 +159,7 @@ const Taxi: React.FC<PP> = ({ t, params }) => {
       <rect x={-84} y={-258} width={90} height={32} rx={6} fill="#f4f1ea" stroke={OL} strokeWidth={2.4} />
       {/* надпись не зеркалится, когда машина развёрнута */}
       <text x={-39} y={-235} textAnchor="middle" fontFamily={RUBIK} fontWeight={800} fontSize={20} fill={OL} transform={params._flip ? "translate(-78 0) scale(-1 1)" : undefined}>
-        ТАКСИ
+        {w("taxi")}
       </text>
       {/* фара спереди, фонарь сзади, бамперы */}
       <ellipse cx={262} cy={-80} rx={9} ry={12} fill="#fff3c2" stroke={OL} strokeWidth={2} />
@@ -250,6 +254,7 @@ const CashPile: React.FC<PP> = ({ params }) => {
 // сообщения появляются по одному каждые params.every секунд
 const Phone: React.FC<PP> = ({ t, params }) => {
   const msgs = str(params.msgs, "").split("|").filter(Boolean);
+  const w = useWord();
   const every = num(params.every, 0.6);
   const shown = msgs.filter((_, i) => t >= i * every);
   const badge = num(params.badge, 0);
@@ -261,7 +266,7 @@ const Phone: React.FC<PP> = ({ t, params }) => {
       <rect x={16} y={20} width={268} height={70} rx={28} fill="#3a6fd8" />
       <rect x={16} y={60} width={268} height={30} fill="#3a6fd8" />
       <text x={36} y={66} fontFamily={RUBIK} fontWeight={700} fontSize={22} fill="#fff">
-        {str(params.title, "ЧАТ")}
+        {str(params.title, w("chat"))}
       </text>
       {cnt ? (
         <g transform="translate(248 56)">
